@@ -1,0 +1,27 @@
+Package: HomoSeeker
+Type: Package
+Title: Seeker for homologous genes with highly variable expression
+Version: 0.1.0
+Author: Shaokang Mo
+Maintainer: Shaokang Mo <soap79022@outlook.com>
+Description: Providing convenience to screen homologous gene for species comparative analysis
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends: 
+    R (>= 2.10)
+Imports:
+    methods,
+    Seurat,
+    SeuratObject,
+    magrittr,
+    biomaRt,
+    dplyr
+RoxygenNote: 7.2.1
+Collate: 
+    'GetSpecNames.R'
+    'HomoSelector.R'
+    'HomoHVG_Object.R'
+    'HVGSelector.R'
+    'HomoSeeker.R'
+    'data.R'
