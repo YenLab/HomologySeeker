@@ -16,7 +16,8 @@ Imports:
     SeuratObject,
     magrittr,
     biomaRt,
-    dplyr
+    dplyr,
+    scran
 RoxygenNote: 7.2.1
 Collate: 
     'AvilData.R'

@@ -9,6 +9,9 @@
 #' @importFrom magrittr %>% set_names
 #' @importFrom dplyr select mutate
 #' @importFrom biomaRt useEnsembl getLDS
+#' @importFrom scuttle logNormCounts
+#' @importFrom scran modelGeneVar
+#'
 #' @import Seurat SeuratObject
 #'
 #' @param species1,species2 Names of species in comparative analysis. Case is ignored.
@@ -16,11 +19,19 @@
 #' @param homo_mat Table of one to one homologous genes table between species 1 and species 2. See HomoSelector() for further details.
 #' @param species1_gene,species2_gene Type of gene name of Single cell expression matrix.
 #' \itemize{
-#'  \item{"Gene_sym"} \strong{:} Gene symbel (default).
-#'  \item{"Gene_id"} \strong{:} Gene ID.
+#'  \item{Gene_sym} \strong{:} Gene symbel (default).
+#'  \item{Gene_id} \strong{:} Gene ID.
 #'  }
-#' @param method HVG selection method to be used. Currently only Seurat is supported.
-#' @param HVGs_method if method = "Seurat", available methods: vst(Default), sct. See Seurat::FindVariableFeatures() and Seurat::SCTransform() for further details
+#' @param method HVG selection method to be used. Currently Supported methods:
+#' \itemize{
+#'  \item{seurat}
+#'  \item{scran}
+#'  }
+#' @param HVGs_method if method = "Seurat", available methods:
+#' \itemize{
+#'  \item{vst(Default)} \strong{:} See Seurat::FindVariableFeatures().
+#'  \item{scran} \strong{:} See Seurat::SCTransform().
+#'  }
 #' @param verbose Whether show calculation progress. Default is TRUE.
 #'
 #' @return A HomoHVG object with Highly variable homologous gene sets for both species
@@ -99,8 +110,30 @@ HVGSelector <- function(species1,
                                           "TRUE","FALSE")
       species2_HVGs$is.HomoHVGs <- ifelse(species2_HVGs$residual_variance>=
                                             mean(species2_HVGs$residual_variance),
-                                          "TRUE","FALSE")}
+                                          "TRUE","FALSE")
+      }
+  if(method == "scran"){
+    if(verbose){message(paste0("Identifying HVGs using ",method))}
+    species1_HVGs <- SingleCellExperiment::SingleCellExperiment(list(counts = as.matrix(species1_mat_homo))) %>%
+      scuttle::logNormCounts() %>%
+      scran::modelGeneVar() %>%
+      as.data.frame() %>%
+      dplyr::mutate(HomoGene=rownames(species2_mat_homo)) %>%
+      {.[order(.$bio,decreasing = T),]}
 
+    species2_HVGs <- SingleCellExperiment::SingleCellExperiment(list(counts = as.matrix(species2_mat_homo))) %>%
+      scuttle::logNormCounts() %>%
+      scran::modelGeneVar() %>%
+      as.data.frame() %>%
+      dplyr::mutate(HomoGene=rownames(species1_mat_homo)) %>%
+      {.[order(.$bio,decreasing = T),]}
+
+    if(verbose){message("Screening HVGs")}
+    species1_HVGs$is.HomoHVGs <- ifelse(species1_HVGs$bio>=mean(species1_HVGs$bio),
+                                        "TRUE","FALSE")
+    species2_HVGs$is.HomoHVGs <- ifelse(species2_HVGs$bio>=mean(species2_HVGs$bio),
+                                        "TRUE","FALSE")
+  }
   if(verbose){message("Complete Successfully")}
     message("There are totally: ","\n",
             grep("TRUE",species1_HVGs$is.HomoHVGs) %>% length()," Homo-HVGs in Species1","\n",
@@ -108,6 +141,7 @@ HVGSelector <- function(species1,
             intersect(species1_HVGs$HomoGene[species1_HVGs$is.HomoHVGs=="TRUE"],
                       rownames(species2_HVGs)[species2_HVGs$is.HomoHVGs=="TRUE"]) %>% length(),
             " Homo-HVGs overlapped")
+
   Object <- HomoHVGObject(species1 = species1,
                           species2 = species2,
                           species1_mat = species1_mat,

@@ -26,13 +26,21 @@ HVGSelector(
 
 \item{species1_gene, species2_gene}{Type of gene name of Single cell expression matrix.
 \itemize{
- \item{"Gene_sym"} \strong{:} Gene symbel (default).
- \item{"Gene_id"} \strong{:} Gene ID.
+ \item{Gene_sym} \strong{:} Gene symbel (default).
+ \item{Gene_id} \strong{:} Gene ID.
  }}
 
-\item{method}{HVG selection method to be used. Currently only Seurat is supported.}
+\item{method}{HVG selection method to be used. Currently Supported methods:
+\itemize{
+ \item{seurat}
+ \item{scran}
+ }}
 
-\item{HVGs_method}{if method = "Seurat", available methods: vst(Default), sct. See Seurat::FindVariableFeatures() and Seurat::SCTransform() for further details}
+\item{HVGs_method}{if method = "Seurat", available methods:
+\itemize{
+ \item{vst(Default)} \strong{:} See Seurat::FindVariableFeatures().
+ \item{scran} \strong{:} See Seurat::SCTransform().
+ }}
 
 \item{verbose}{Whether show calculation progress. Default is TRUE.}
 }

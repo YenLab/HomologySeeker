@@ -4,19 +4,27 @@
 \alias{HomoSelector}
 \title{Homologous information collector between two Species}
 \usage{
-HomoSelector(species1, species2, homotype = "ortholog_one2one", version = 105)
+HomoSelector(
+  species1,
+  species2,
+  homotype = "ortholog_one2one",
+  version = 105,
+  usedataset = TRUE
+)
 }
 \arguments{
 \item{species1, species2}{Names of species in comparative analysis. Case is ignored}
 
 \item{homotype}{Homologous gene relationship between two species:
 \itemize{
- \item{"ortholog_one2one"} \strong{:} One-to-one orthologues(Default).
- \item{"ortholog_one2many"} \strong{:} One-to-many orthologues.
- \item{"ortholog_many2many"} \strong{:} Many-to-many orthologues.
+ \item{ortholog_one2one} \strong{:} One-to-one orthologues(Default).
+ \item{ortholog_one2many} \strong{:} One-to-many orthologues.
+ \item{ortholog_many2many} \strong{:} Many-to-many orthologues.
  }}
 
 \item{version}{Ensembl version to be connected. See biomaRt::useEnsembl() for detailed information.}
+
+\item{usedataset}{Whether use aviilable v108 datasets}
 }
 \value{
 Table of homologous genes list between species 1 and species 2

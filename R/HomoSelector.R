@@ -13,11 +13,12 @@
 #' @param species1,species2 Names of species in comparative analysis. Case is ignored
 #' @param homotype Homologous gene relationship between two species:
 #' \itemize{
-#'  \item{"ortholog_one2one"} \strong{:} One-to-one orthologues(Default).
-#'  \item{"ortholog_one2many"} \strong{:} One-to-many orthologues.
-#'  \item{"ortholog_many2many"} \strong{:} Many-to-many orthologues.
+#'  \item{ortholog_one2one} \strong{:} One-to-one orthologues(Default).
+#'  \item{ortholog_one2many} \strong{:} One-to-many orthologues.
+#'  \item{ortholog_many2many} \strong{:} Many-to-many orthologues.
 #'  }
 #' @param version Ensembl version to be connected. See biomaRt::useEnsembl() for detailed information.
+#' @param usedataset Whether use aviilable v108 datasets
 #'
 #' @return Table of homologous genes list between species 1 and species 2
 #' @export
@@ -44,49 +45,72 @@
 HomoSelector <- function(species1,
                          species2,
                          homotype = "ortholog_one2one",
-                         version = 105){
+                         version = 105,
+                         usedataset = TRUE){
   if(class(try(GetSpecNames(species1),silent = T))=="try-error"){
     GetSpecNames(species1)
-  }else if(class(try(GetSpecNames(species2),silent = T))=="try-error"){
+  }
+  if(class(try(GetSpecNames(species2),silent = T))=="try-error"){
     GetSpecNames(species2)
-  }else if(GetSpecNames(species1)$Species_Name==GetSpecNames(species2)$Species_Name){
+  }
+  if(GetSpecNames(species1)$Species_Name==GetSpecNames(species2)$Species_Name){
     stop("\n","It appears that species1 and species2 are the same.","\n",
          "Please check your 'species1' and 'species2' input")
+  }
+  if(usedataset){
+    if(all(GetSpecNames(c(species1,species2))[,2] %in% c("Human","Mouse"))){
+
+      message(paste0("Loading existing Human2Mouse datasets"))
+      homo_mat <- read.csv("https://github.com/Soap4/Data/files/10098277/Orthologues_Human2Mouse_v108.csv",row.names = 1)
+      if(GetSpecNames(c(species1,species2))[1,2]=="Mouse"){colnames(homo_mat)[1:4] <- c("Gene.name.1","Gene.stable.ID.1",
+                                                                                      "Gene.name","Gene.stable.ID")}
+
+    }else if(all(GetSpecNames(c(species1,species2))[,2] %in% c("Human","Zebrafish"))){
+
+      message(paste0("Loading existing Human2Zebrafish datasets"))
+      homo_mat <- read.csv("https://github.com/Soap4/Data/files/10098276/Orthologues_Human2Zebrafish_v108.csv",row.names = 1)
+      if(GetSpecNames(c(species1,species2))[1,2]=="Zebrafish"){colnames(homo_mat)[1:4] <- c("Gene.name.1","Gene.stable.ID.1",
+                                                                                          "Gene.name","Gene.stable.ID")}
+
+    }else if(all(GetSpecNames(c(species1,species2))[,2] %in% c("Mouse","Zebrafish"))){
+
+      message(paste0("Loading existing Mouse2Zebrafish datasets"))
+      homo_mat <- read.csv("https://github.com/Soap4/Data/files/10098275/Orthologues_Mouse2Zebrafish_v108.csv",row.names = 1)
+      if(GetSpecNames(c(species1,species2))[1,2]=="Zebrafish"){colnames(homo_mat)[1:4] <- c("Gene.name.1","Gene.stable.ID.1",
+                                                                                          "Gene.name","Gene.stable.ID")}
+    }else{
+      break
+    }
   }else{
+
     species1_name <- GetSpecNames(species1)
     species2_name <- GetSpecNames(species2)
 
     message(paste0("Peparing available ",species1_name$Species_Name," datasets"))
     species1_mart <- useEnsembl(biomart = "ensembl",
-                                # GRCh = GRCh,
-                                # mirror = mirror,
-                                # host = host,
                                 version = version,
                                 dataset = paste0(species1_name$Scientific_Name,"_gene_ensembl"))
     message(paste0("Peparing available ",species2_name$Species_Name," datasets"))
     species2_mart <- useEnsembl(biomart = "ensembl",
-                                # GRCh = GRCh,
-                                # mirror = mirror,
-                                # host = host,
                                 version = version,
                                 dataset = paste0(species2_name$Scientific_Name,"_gene_ensembl"))
     message("Extracting homologous information")
-    tmp <- getLDS(mart = species1_mart,
-                  attributes = c("external_gene_name","ensembl_gene_id","description",
-                                 "chromosome_name","start_position","end_position","strand",
-                                 paste0(species2_name$Scientific_Name,"_homolog_orthology_type"),
-                                 paste0(species2_name$Scientific_Name,"_homolog_orthology_confidence")),
-                  martL = species2_mart,
-                  attributesL = c("external_gene_name","ensembl_gene_id","description",
-                                  "chromosome_name","start_position","end_position","strand"))
-    if(is.null(homotype)){
-      tmp <- tmp[tmp %>% select(contains('confi'))==1,]
-    }else{
-      tmp <- tmp[tmp %>% select(contains('type')) == homotype,]
-      tmp <- tmp[tmp %>% select(contains('confi'))==1,]
-    }
-    message("Extraction Complete! :)")
-    message(paste0("Total Homologous Genes Number: ",nrow(tmp)))
+    homo_mat <- getLDS(mart = species1_mart,
+                       attributes = c("external_gene_name","ensembl_gene_id","description",
+                                      "chromosome_name","start_position","end_position","strand",
+                                      paste0(species2_name$Scientific_Name,"_homolog_orthology_type"),
+                                      paste0(species2_name$Scientific_Name,"_homolog_orthology_confidence")),
+                       martL = species2_mart,
+                       attributesL = c("external_gene_name","ensembl_gene_id","description",
+                                       "chromosome_name","start_position","end_position","strand"))
   }
-  return(tmp)
+  if(is.null(homotype)){
+    homo_mat <- homo_mat[homo_mat %>% select(contains('confi'))==1,]
+  }else{
+    homo_mat <- homo_mat[homo_mat %>% select(contains('type')) == homotype,]
+    homo_mat <- homo_mat[homo_mat %>% select(contains('confi'))==1,]
+  }
+  message("Extraction Complete! :)")
+  message(paste0("Total Homologous Genes Number: ",nrow(homo_mat)))
+  return(homo_mat)
 }

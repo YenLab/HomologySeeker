@@ -14,7 +14,6 @@ HomoSeeker(
   method = "seurat",
   HVGs_method = "vst",
   version = NULL,
-  usedataset = TRUE,
   verbose = TRUE
 )
 }
@@ -25,17 +24,23 @@ HomoSeeker(
 
 \item{species1_gene, species2_gene}{Type of gene name of Single cell expression matrix.
 \itemize{
- \item{"Gene_sym"} \strong{:} Gene symbel (default).
- \item{"Gene_id"} \strong{:} Gene ID.
+ \item{Gene_sym} \strong{:} Gene symbel (default).
+ \item{Gene_id} \strong{:} Gene ID.
  }}
 
-\item{method}{HVG selection method to be used. Currently only Seurat is supported.}
+\item{method}{HVG selection method to be used. Currently Supported methods:
+\itemize{
+ \item{seurat}
+ \item{scran}
+ }}
 
-\item{HVGs_method}{if method = "Seurat", available methods: vst(Default), sct. See Seurat::FindVariableFeatures() and Seurat::SCTransform() for further details}
+\item{HVGs_method}{if method = "Seurat", available methods:
+\itemize{
+ \item{vst (Default)} \strong{:} See Seurat::FindVariableFeatures().
+ \item{sct} \strong{:} See Seurat::SCTransform().
+ }}
 
 \item{version}{Ensembl version to be connected. See HomoSelector() and biomaRt::useEnsembl() for detailed information.}
-
-\item{usedataset}{Whether used pre-built homologou information datasets. See AvilData() for details}
 
 \item{verbose}{Whether show calculation progress. Default is TRUE.}
 }
