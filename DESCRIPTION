@@ -19,6 +19,7 @@ Imports:
     dplyr
 RoxygenNote: 7.2.1
 Collate: 
+    'AvilData.R'
     'GetSpecNames.R'
     'HomoSelector.R'
     'HomoHVG_Object.R'

@@ -1,4 +1,7 @@
-#' Title
+#' @title Highly variable homologous genes identifier
+#'
+#' @description Identify highly variable genes using homologous gene set with HVG Methodologies
+#'
 #' @include HomoHVG_Object.R
 #' @include HomoSelector.R
 #'
@@ -8,34 +11,31 @@
 #' @importFrom biomaRt useEnsembl getLDS
 #' @import Seurat SeuratObject
 #'
-#' @param species1
-#' @param species2
-#' @param species1_mat
-#' @param species2_mat
-#' @param homo_mat
-#' @param species1_gene
-#' @param species2_gene
-#' @param method
-#' @param HVGs_method
-#' @param verbose
+#' @param species1,species2 Names of species in comparative analysis. Case is ignored.
+#' @param species1_mat,species2_mat Single cell expression matrix of species 1 or 2 with row as gene symbol/ID and column as sample ID.
+#' @param homo_mat Table of one to one homologous genes table between species 1 and species 2. See HomoSelector() for further details.
+#' @param species1_gene,species2_gene Type of gene name of Single cell expression matrix.
+#' \itemize{
+#'  \item{"Gene_sym"} \strong{:} Gene symbel (default).
+#'  \item{"Gene_id"} \strong{:} Gene ID.
+#'  }
+#' @param method HVG selection method to be used. Currently only Seurat is supported.
+#' @param HVGs_method if method = "Seurat", available methods: vst(Default), sct. See Seurat::FindVariableFeatures() and Seurat::SCTransform() for further details
+#' @param verbose Whether show calculation progress. Default is TRUE.
 #'
-#' @return
+#' @return A HomoHVG object with Highly variable homologous gene sets for both species
 #' @export
 #'
-#' @examples
 HVGSelector <- function(species1,
                         species2,
                         species1_mat,
                         species2_mat,
-                        homo_mat = NULL, # col1: species1 gene name
-                                         # col2: species1 gene id
-                                         # col3: species2 gene name
-                                         # col4: species2 gene id
-                        species1_gene = "Gene_sym",# Gene_sym/Gene_id
-                        species2_gene = "Gene_sym",# Gene_sym/Gene_id
-                        method = "seurat",# Current: seurat
-                        HVGs_method = "vst", # Current: vst sct
-                        verbose = T){
+                        homo_mat = NULL,
+                        species1_gene = "Gene_sym",
+                        species2_gene = "Gene_sym",
+                        method = "seurat",
+                        HVGs_method = "vst",
+                        verbose = TRUE){
   if(is.null(homo_mat)){
     homo_mat <- HomoSelector(species1 = species1,species2 = species2)
     mat <- homo_mat[,c("Gene.name","Gene.stable.ID",

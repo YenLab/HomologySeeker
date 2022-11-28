@@ -2,7 +2,7 @@
 % Please edit documentation in R/HomoHVG_Object.R
 \name{HomoHVGObject}
 \alias{HomoHVGObject}
-\title{Title}
+\title{Create a HomoHVG object}
 \usage{
 HomoHVGObject(
   species1,
@@ -17,8 +17,19 @@ HomoHVGObject(
 )
 }
 \arguments{
-\item{Table_homo}{}
+\item{species1, species2}{Names of species in comparative analysis. Case is ignored}
+
+\item{species1_mat, species2_mat}{Single cell expression matrix of species 1 or 2 with row as gene symbol/ID and column as sample ID}
+
+\item{species1_mat_homo, species2_mat_homo}{Single cell expression matrix of species 1 or 2 with row as homologous gene name/ID and column as sample ID}
+
+\item{spec1_HVG, spec2_HVG}{Homo-HVG list of species 1 or 2}
+
+\item{Table_homo}{Table of one to one homologous genes list between species 1 and species 2}
+}
+\value{
+HomoHVG object
 }
 \description{
-Title
+HomoHVG object containing species matrics, homologous genes and variable genes information
 }

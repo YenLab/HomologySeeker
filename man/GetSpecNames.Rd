@@ -2,13 +2,25 @@
 % Please edit documentation in R/GetSpecNames.R
 \name{GetSpecNames}
 \alias{GetSpecNames}
-\title{Title}
+\title{Get Species official name}
 \usage{
 GetSpecNames(Species = NULL)
 }
 \arguments{
-\item{Species}{}
+\item{Species}{Names of species to be queried. Case is ignored.}
+}
+\value{
+list of species scientific name and species name
 }
 \description{
-Title
+Check available species official scientific name
+}
+\examples{
+\dontrun{
+# Get scientific name for single or multiple species:
+species_name <- GetSpecNames(c("mouse","human"))
+
+# Or get a full list:
+species_name <- GetSpecNames(Species = NULL)
+}
 }

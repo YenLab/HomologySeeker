@@ -2,20 +2,46 @@
 % Please edit documentation in R/HomoSelector.R
 \name{HomoSelector}
 \alias{HomoSelector}
-\title{Title}
+\title{Homologous information collector between two Species}
 \usage{
-HomoSelector(
-  species1,
-  species2,
-  homotype = "ortholog_one2one",
-  mirror = NULL,
-  version = NULL,
-  host = "https://dec2021.archive.ensembl.org/"
-)
+HomoSelector(species1, species2, homotype = "ortholog_one2one", version = 105)
 }
 \arguments{
-\item{host}{}
+\item{species1, species2}{Names of species in comparative analysis. Case is ignored}
+
+\item{homotype}{Homologous gene relationship between two species:
+\itemize{
+ \item{"ortholog_one2one"} \strong{:} One-to-one orthologues(Default).
+ \item{"ortholog_one2many"} \strong{:} One-to-many orthologues.
+ \item{"ortholog_many2many"} \strong{:} Many-to-many orthologues.
+ }}
+
+\item{version}{Ensembl version to be connected. See biomaRt::useEnsembl() for detailed information.}
+}
+\value{
+Table of homologous genes list between species 1 and species 2
 }
 \description{
-Title
+Get homologous gene set and information between two species
+}
+\details{
+Due to the query issue after the latest update to Ensembl version 106 as described in
+'https://github.com/grimbough/biomaRt/issues/61', currently the version '105' is the most stable one.
+If other Ensembl version are needed, the online source of BioMart ('http://www.ensembl.org/biomart/martview')
+are avilable for querying homologous information among species. We also implement available datasets: Human2Mouse,
+Human2Zebrafish and Mouse2Zebrafish in HomoSeeker (load with data() function) and deposite in our GitHub
+repository under Ensembl verison 108:'https://github.com/Soap4/Data'.
+}
+\examples{
+\dontrun{
+# Get Homologous gene list between mouse and human
+
+Homo_mat <- HomoSelector(species1 = "mouse",species1 = "human")
+
+# Or get available datasets in HomoSeeker:
+
+Human2Mouse <- read.csv("https://github.com/Soap4/Data/files/10098277/Orthologues_Human2Mouse_v108.csv",row.names = 1)
+Human2Zebrafish <- read.csv("https://github.com/Soap4/Data/files/10098276/Orthologues_Human2Zebrafish_v108.csv",row.names = 1)
+Mouse2Zebrafish <- read.csv("https://github.com/Soap4/Data/files/10098275/Orthologues_Mouse2Zebrafish_v108.csv",row.names = 1)
+}
 }

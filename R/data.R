@@ -1,1 +1,1 @@
-SpeciesName <- read.csv("https://public.dm.files.1drv.com/y4mjihPC-wynXn496vG-Mp4tom19O3pP8AtTd_UV42C8Mj7Y6kWNuslwqwVLQGbjqUsxtY9SLvcfpvIcaVsW2MQgknyxDiE2894VdUv4PdaFxDgKJsovB2I1ZVSavhyy_6KgrdWSoeX1z4-_m8eXy3rEAmxbRCOiOMdAxqhQcsP-QVcuds8cTkbDyB6m_KdLitbr8uIOmF0SIhocZXrrcR693jDLcPJnPNMCFo9OnU9_Qs")
+SpeciesName <- read.csv("https://github.com/Soap4/Data/files/10097788/SpeciesName.csv")

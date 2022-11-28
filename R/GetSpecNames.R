@@ -1,4 +1,6 @@
-#' Title
+#' @title  Get Species official name
+#'
+#' @description Check available species official scientific name
 #'
 #' @importFrom methods setClass
 #' @importFrom magrittr %>% set_names
@@ -6,16 +8,22 @@
 #' @importFrom biomaRt useEnsembl getLDS
 #' @import Seurat SeuratObject
 #'
-#' @param Species
+#' @param Species Names of species to be queried. Case is ignored.
 #'
-#' @return
+#' @return list of species scientific name and species name
 #' @export
-#'
 #' @examples
+#' \dontrun{
+#' # Get scientific name for single or multiple species:
+#' species_name <- GetSpecNames(c("mouse","human"))
+#'
+#' # Or get a full list:
+#' species_name <- GetSpecNames(Species = NULL)
+#' }
 GetSpecNames <- function(Species = NULL){
   '%ni%' <- Negate("%in%")
-  data("SpeciesName")
-  tmp <- Dataset
+  SpeciesName <- get("SpeciesName")
+  tmp <- SpeciesName
   tmp$Species_Name <- tolower(tmp$Species_Name)
   if(is.null(Species)){
     return(SpeciesName)

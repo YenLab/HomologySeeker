@@ -1,4 +1,6 @@
-#' Title
+#' @title  Create a HomoHVG object
+#'
+#' @description HomoHVG object containing species matrics, homologous genes and variable genes information
 #'
 #' @importFrom methods setClass
 #' @importFrom magrittr %>% set_names
@@ -6,20 +8,15 @@
 #' @importFrom biomaRt useEnsembl getLDS
 #' @import Seurat SeuratObject
 #'
-#' @param species1
-#' @param species2
-#' @param species1_mat
-#' @param species2_mat
-#' @param species1_mat_homo
-#' @param species2_mat_homo
-#' @param spec1_HVG
-#' @param spec2_HVG
-#' @param Table_homo
+#' @param species1,species2 Names of species in comparative analysis. Case is ignored
+#' @param species1_mat,species2_mat Single cell expression matrix of species 1 or 2 with row as gene symbol/ID and column as sample ID
+#' @param species1_mat_homo,species2_mat_homo Single cell expression matrix of species 1 or 2 with row as homologous gene name/ID and column as sample ID
+#' @param spec1_HVG,spec2_HVG Homo-HVG list of species 1 or 2
+#' @param Table_homo Table of one to one homologous genes list between species 1 and species 2
 #'
-#' @return
+#' @return HomoHVG object
 #' @export
 #'
-#' @examples
 HomoHVGObject <- function(species1,
                           species2,
                           species1_mat,

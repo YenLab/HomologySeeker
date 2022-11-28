@@ -2,7 +2,7 @@
 % Please edit documentation in R/HVGSelector.R
 \name{HVGSelector}
 \alias{HVGSelector}
-\title{Title}
+\title{Highly variable homologous genes identifier}
 \usage{
 HVGSelector(
   species1,
@@ -14,12 +14,31 @@ HVGSelector(
   species2_gene = "Gene_sym",
   method = "seurat",
   HVGs_method = "vst",
-  verbose = T
+  verbose = TRUE
 )
 }
 \arguments{
-\item{verbose}{}
+\item{species1, species2}{Names of species in comparative analysis. Case is ignored.}
+
+\item{species1_mat, species2_mat}{Single cell expression matrix of species 1 or 2 with row as gene symbol/ID and column as sample ID.}
+
+\item{homo_mat}{Table of one to one homologous genes table between species 1 and species 2. See HomoSelector() for further details.}
+
+\item{species1_gene, species2_gene}{Type of gene name of Single cell expression matrix.
+\itemize{
+ \item{"Gene_sym"} \strong{:} Gene symbel (default).
+ \item{"Gene_id"} \strong{:} Gene ID.
+ }}
+
+\item{method}{HVG selection method to be used. Currently only Seurat is supported.}
+
+\item{HVGs_method}{if method = "Seurat", available methods: vst(Default), sct. See Seurat::FindVariableFeatures() and Seurat::SCTransform() for further details}
+
+\item{verbose}{Whether show calculation progress. Default is TRUE.}
+}
+\value{
+A HomoHVG object with Highly variable homologous gene sets for both species
 }
 \description{
-Title
+Identify highly variable genes using homologous gene set with HVG Methodologies
 }
