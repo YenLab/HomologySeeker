@@ -28,7 +28,7 @@
 #' @param usedataset Whether used pre-built homologou information datasets. See AvilData() for details
 #'
 #' @return Returns a HomoHVG object with slot:
-#' #' \itemize{
+#' \itemize{
 #'  \item{Species} \strong{:} Query species names.
 #'  \item{HomoHVG} \strong{:} Highly variable gene sets for species 1 and 2.
 #'  \item{Matrix_orig} \strong{:} Original single cell matrices for species 1 and 2.
