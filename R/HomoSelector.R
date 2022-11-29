@@ -10,7 +10,7 @@
 #' @importFrom biomaRt useEnsembl getLDS
 #' @import Seurat SeuratObject
 #'
-#' @param species1,species2 Names of species in comparative analysis. Case is ignored
+#' @param RefSpec,QuySpec Names of reference(ref) and query(quy) species in comparative analysis. Case is ignored
 #' @param homotype Homologous gene relationship between two species:
 #' \itemize{
 #'  \item{ortholog_one2one} \strong{:} One-to-one orthologues(Default).
@@ -18,7 +18,7 @@
 #'  \item{ortholog_many2many} \strong{:} Many-to-many orthologues.
 #'  }
 #' @param version Ensembl version to be connected. See biomaRt::useEnsembl() for detailed information.
-#' @param usedataset Whether use aviilable v108 datasets
+#' @param usedataset Whether use pre-built datasets from Ensembl gene version 108
 #'
 #' @return Table of homologous genes list between species 1 and species 2
 #' @export
@@ -28,13 +28,13 @@
 #' If other Ensembl version are needed, the online source of BioMart ('http://www.ensembl.org/biomart/martview')
 #' are avilable for querying homologous information among species. We also implement available datasets: Human2Mouse,
 #' Human2Zebrafish and Mouse2Zebrafish in HomoSeeker (load with data() function) and deposite in our GitHub
-#' repository under Ensembl verison 108:'https://github.com/Soap4/Data'.
+#' repository under Ensembl gene verison 108:'https://github.com/Soap4/Data'.
 #'
 #' @examples
 #' \dontrun{
 #' # Get Homologous gene list between mouse and human
 #'
-#' Homo_mat <- HomoSelector(species1 = "mouse",species1 = "human")
+#' Homo_mat <- HomoSelector(RefSpec = "mouse",RefSpec = "human")
 #'
 #' # Or get available datasets in HomoSeeker:
 #'
@@ -42,65 +42,48 @@
 #' Human2Zebrafish <- read.csv("https://github.com/Soap4/Data/files/10098276/Orthologues_Human2Zebrafish_v108.csv",row.names = 1)
 #' Mouse2Zebrafish <- read.csv("https://github.com/Soap4/Data/files/10098275/Orthologues_Mouse2Zebrafish_v108.csv",row.names = 1)
 #' }
-HomoSelector <- function(species1,
-                         species2,
+HomoSelector <- function(RefSpec,
+                         QuySpec,
                          homotype = "ortholog_one2one",
                          version = 105,
                          usedataset = TRUE){
-  if(class(try(GetSpecNames(species1),silent = T))=="try-error"){
-    GetSpecNames(species1)
+  if(class(try(GetSpecNames(RefSpec),silent = T))=="try-error"){
+    GetSpecNames(RefSpec)
   }
-  if(class(try(GetSpecNames(species2),silent = T))=="try-error"){
-    GetSpecNames(species2)
+  if(class(try(GetSpecNames(QuySpec),silent = T))=="try-error"){
+    GetSpecNames(QuySpec)
   }
-  if(GetSpecNames(species1)$Species_Name==GetSpecNames(species2)$Species_Name){
-    stop("\n","It appears that species1 and species2 are the same.","\n",
-         "Please check your 'species1' and 'species2' input")
+  if(GetSpecNames(RefSpec)$Species_Name==GetSpecNames(QuySpec)$Species_Name){
+    stop("\n","It appears that RefSpec and QuySpec are the same.","\n",
+         "Please check your 'RefSpec' and 'QuySpec' input")
   }
-  if(usedataset){
-    if(all(GetSpecNames(c(species1,species2))[,2] %in% c("Human","Mouse"))){
-
-      message(paste0("Loading existing Human2Mouse datasets"))
-      homo_mat <- read.csv("https://github.com/Soap4/Data/files/10098277/Orthologues_Human2Mouse_v108.csv",row.names = 1)
-      if(GetSpecNames(c(species1,species2))[1,2]=="Mouse"){colnames(homo_mat)[1:4] <- c("Gene.name.1","Gene.stable.ID.1",
-                                                                                      "Gene.name","Gene.stable.ID")}
-
-    }else if(all(GetSpecNames(c(species1,species2))[,2] %in% c("Human","Zebrafish"))){
-
-      message(paste0("Loading existing Human2Zebrafish datasets"))
-      homo_mat <- read.csv("https://github.com/Soap4/Data/files/10098276/Orthologues_Human2Zebrafish_v108.csv",row.names = 1)
-      if(GetSpecNames(c(species1,species2))[1,2]=="Zebrafish"){colnames(homo_mat)[1:4] <- c("Gene.name.1","Gene.stable.ID.1",
-                                                                                          "Gene.name","Gene.stable.ID")}
-
-    }else if(all(GetSpecNames(c(species1,species2))[,2] %in% c("Mouse","Zebrafish"))){
-
-      message(paste0("Loading existing Mouse2Zebrafish datasets"))
-      homo_mat <- read.csv("https://github.com/Soap4/Data/files/10098275/Orthologues_Mouse2Zebrafish_v108.csv",row.names = 1)
-      if(GetSpecNames(c(species1,species2))[1,2]=="Zebrafish"){colnames(homo_mat)[1:4] <- c("Gene.name.1","Gene.stable.ID.1",
-                                                                                          "Gene.name","Gene.stable.ID")}
-    }else{
-      break
-    }
+  if(usedataset & all(GetSpecNames(c(RefSpec,QuySpec))[,2] %in% c("Human","Mouse","Zebrafish"))){
+    AvilData <- AvilData()
+    spec_name <- GetSpecNames(c(RefSpec,QuySpec))[,2]
+    url <- AvilData$Source[AvilData$Reference==spec_name[1] & AvilData$Query==spec_name[2]]
+    used_dataset <- AvilData$Available_dataset[AvilData$Reference==spec_name[1] & AvilData$Query==spec_name[2]]
+    message("Loading existing ",used_dataset," datasets")
+    homo_mat <- read.csv(url)
   }else{
 
-    species1_name <- GetSpecNames(species1)
-    species2_name <- GetSpecNames(species2)
+    RefSpec_name <- GetSpecNames(RefSpec)
+    QuySpec_name <- GetSpecNames(QuySpec)
 
-    message(paste0("Peparing available ",species1_name$Species_Name," datasets"))
-    species1_mart <- useEnsembl(biomart = "ensembl",
+    message(paste0("Peparing available ",RefSpec_name$Species_Name," datasets"))
+    RefSpec_mart <- useEnsembl(biomart = "ensembl",
                                 version = version,
-                                dataset = paste0(species1_name$Scientific_Name,"_gene_ensembl"))
-    message(paste0("Peparing available ",species2_name$Species_Name," datasets"))
-    species2_mart <- useEnsembl(biomart = "ensembl",
+                                dataset = paste0(RefSpec_name$Scientific_Name,"_gene_ensembl"))
+    message(paste0("Peparing available ",QuySpec_name$Species_Name," datasets"))
+    QuySpec_mart <- useEnsembl(biomart = "ensembl",
                                 version = version,
-                                dataset = paste0(species2_name$Scientific_Name,"_gene_ensembl"))
+                                dataset = paste0(QuySpec_name$Scientific_Name,"_gene_ensembl"))
     message("Extracting homologous information")
-    homo_mat <- getLDS(mart = species1_mart,
+    homo_mat <- getLDS(mart = RefSpec_mart,
                        attributes = c("external_gene_name","ensembl_gene_id","description",
                                       "chromosome_name","start_position","end_position","strand",
-                                      paste0(species2_name$Scientific_Name,"_homolog_orthology_type"),
-                                      paste0(species2_name$Scientific_Name,"_homolog_orthology_confidence")),
-                       martL = species2_mart,
+                                      paste0(QuySpec_name$Scientific_Name,"_homolog_orthology_type"),
+                                      paste0(QuySpec_name$Scientific_Name,"_homolog_orthology_confidence")),
+                       martL = QuySpec_mart,
                        attributesL = c("external_gene_name","ensembl_gene_id","description",
                                        "chromosome_name","start_position","end_position","strand"))
   }

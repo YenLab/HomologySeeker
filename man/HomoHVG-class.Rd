@@ -5,15 +5,15 @@
 \alias{HomoHVG-class}
 \title{Create a HomoHVG object}
 \arguments{
-\item{species1, species2}{Names of species in comparative analysis. Case is ignored}
+\item{RefSpec, QuySpec}{Names of reference(ref) and query(quy) species in comparative analysis. Case is ignored}
 
-\item{species1_mat, species2_mat}{Single cell expression matrix of species 1 or 2 with row as gene symbol/ID and column as sample ID}
+\item{RefSpec_mat, QuySpec_mat}{Single cell expression matrix of reference or query species with row as gene symbol/ID and column as sample ID}
 
-\item{species1_mat_homo, species2_mat_homo}{Single cell expression matrix of species 1 or 2 with row as homologous gene name/ID and column as sample ID}
+\item{RefSpec_mat_homo, QuySpec_mat_homo}{Single cell expression matrix of reference or query species with row as homologous gene name/ID and column as sample ID}
 
-\item{spec1_HVG, spec2_HVG}{Homo-HVG list of species 1 or 2}
+\item{RefSpec_HVGs, QuySpec_HVGs}{Homo-HVG list of reference or query species}
 
-\item{Table_homo}{Table of one to one homologous genes list between species 1 and species 2}
+\item{Table_homo}{Table of one to one homologous genes list between reference and query species}
 }
 \value{
 HomoHVG object

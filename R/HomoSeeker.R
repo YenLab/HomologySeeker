@@ -16,9 +16,9 @@
 #' @import Seurat SeuratObject
 #'
 #'
-#' @param species1,species2 Names of species in comparative analysis. Case is ignored
-#' @param species1_mat,species2_mat Single cell expression matrix of species 1 or 2 with row as gene symbol/ID and column as sample ID
-#' @param species1_gene,species2_gene Type of gene name of Single cell expression matrix.
+#' @param RefSpec,QuySpec Names of reference(ref) and query(quy) species in comparative analysis. Case is ignored
+#' @param RefSpec_mat,QuySpec_mat Single cell expression matrix of reference or query species with row as gene symbol/ID and column as sample ID
+#' @param RefSpec_gene,QuySpec_gene Type of gene name of Single cell expression matrix.
 #' \itemize{
 #'  \item{Gene_sym} \strong{:} Gene symbel (default).
 #'  \item{Gene_id} \strong{:} Gene ID.
@@ -47,30 +47,30 @@
 #'  }
 #' @export
 #'
-HomoSeeker <- function(species1,
-                       species2,
-                       species1_mat,
-                       species2_mat,
-                       species1_gene = "Gene_sym",
-                       species2_gene = "Gene_sym",
+HomoSeeker <- function(RefSpec,
+                       QuySpec,
+                       RefSpec_mat,
+                       QuySpec_mat,
+                       RefSpec_gene = "Gene_sym",
+                       QuySpec_gene = "Gene_sym",
                        method = "seurat",
                        HVGs_method = "vst",
                        version = NULL,
                        verbose = TRUE){
 
-      homo_mat <- HomoSelector(species1 = species1,
-                               species2 = species2,
+      homo_mat <- HomoSelector(RefSpec = RefSpec,
+                               QuySpec = QuySpec,
                                homotype = "ortholog_one2one",
                                version = version)
-  object <- HVGSelector(species1 = species1,
-                        species2 = species2,
-                        species1_mat = species1_mat,
-                        species2_mat = species2_mat,
-                        homo_mat = homo_mat,
-                        species1_gene = species1_gene,
-                        species2_gene = species2_gene,
-                        method = method,
-                        HVGs_method = HVGs_method,
-                        verbose = verbose)
+      object <- HVGSelector(RefSpec = RefSpec,
+                            QuySpec = QuySpec,
+                            RefSpec_mat = RefSpec_mat,
+                            QuySpec_mat = QuySpec_mat,
+                            homo_mat = homo_mat,
+                            RefSpec_gene = RefSpec_gene,
+                            QuySpec_gene = QuySpec_gene,
+                            method = method,
+                            HVGs_method = HVGs_method,
+                            verbose = verbose)
   return(object)
 }

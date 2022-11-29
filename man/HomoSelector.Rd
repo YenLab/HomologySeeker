@@ -5,15 +5,15 @@
 \title{Homologous information collector between two Species}
 \usage{
 HomoSelector(
-  species1,
-  species2,
+  RefSpec,
+  QuySpec,
   homotype = "ortholog_one2one",
   version = 105,
   usedataset = TRUE
 )
 }
 \arguments{
-\item{species1, species2}{Names of species in comparative analysis. Case is ignored}
+\item{RefSpec, QuySpec}{Names of reference(ref) and query(quy) species in comparative analysis. Case is ignored}
 
 \item{homotype}{Homologous gene relationship between two species:
 \itemize{
@@ -24,7 +24,7 @@ HomoSelector(
 
 \item{version}{Ensembl version to be connected. See biomaRt::useEnsembl() for detailed information.}
 
-\item{usedataset}{Whether use aviilable v108 datasets}
+\item{usedataset}{Whether use pre-built datasets from Ensembl gene version 108}
 }
 \value{
 Table of homologous genes list between species 1 and species 2
@@ -38,13 +38,13 @@ Due to the query issue after the latest update to Ensembl version 106 as describ
 If other Ensembl version are needed, the online source of BioMart ('http://www.ensembl.org/biomart/martview')
 are avilable for querying homologous information among species. We also implement available datasets: Human2Mouse,
 Human2Zebrafish and Mouse2Zebrafish in HomoSeeker (load with data() function) and deposite in our GitHub
-repository under Ensembl verison 108:'https://github.com/Soap4/Data'.
+repository under Ensembl gene verison 108:'https://github.com/Soap4/Data'.
 }
 \examples{
 \dontrun{
 # Get Homologous gene list between mouse and human
 
-Homo_mat <- HomoSelector(species1 = "mouse",species1 = "human")
+Homo_mat <- HomoSelector(RefSpec = "mouse",RefSpec = "human")
 
 # Or get available datasets in HomoSeeker:
 

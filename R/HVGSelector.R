@@ -11,13 +11,14 @@
 #' @importFrom biomaRt useEnsembl getLDS
 #' @importFrom scuttle logNormCounts
 #' @importFrom scran modelGeneVar
+#' @importFrom scmap selectFeatures
 #'
 #' @import Seurat SeuratObject
 #'
-#' @param species1,species2 Names of species in comparative analysis. Case is ignored.
-#' @param species1_mat,species2_mat Single cell expression matrix of species 1 or 2 with row as gene symbol/ID and column as sample ID.
+#' @param RefSpec,QuySpec Names of reference(ref) and query(quy) species in comparative analysis. Case is ignored
+#' @param RefSpec_mat,QuySpec_mat Single cell expression matrix of reference or query species with row as gene symbol/ID and column as sample ID
 #' @param homo_mat Table of one to one homologous genes table between species 1 and species 2. See HomoSelector() for further details.
-#' @param species1_gene,species2_gene Type of gene name of Single cell expression matrix.
+#' @param RefSpec_gene,QuySpec_gene Type of gene name of Single cell expression matrix.
 #' \itemize{
 #'  \item{Gene_sym} \strong{:} Gene symbel (default).
 #'  \item{Gene_id} \strong{:} Gene ID.
@@ -26,6 +27,7 @@
 #' \itemize{
 #'  \item{seurat}
 #'  \item{scran}
+#'  \item{scmap}
 #'  }
 #' @param HVGs_method if method = "Seurat", available methods:
 #' \itemize{
@@ -37,18 +39,18 @@
 #' @return A HomoHVG object with Highly variable homologous gene sets for both species
 #' @export
 #'
-HVGSelector <- function(species1,
-                        species2,
-                        species1_mat,
-                        species2_mat,
+HVGSelector <- function(RefSpec,
+                        QuySpec,
+                        RefSpec_mat,
+                        QuySpec_mat,
                         homo_mat = NULL,
-                        species1_gene = "Gene_sym",
-                        species2_gene = "Gene_sym",
+                        RefSpec_gene = "Gene_sym",
+                        QuySpec_gene = "Gene_sym",
                         method = "seurat",
                         HVGs_method = "vst",
                         verbose = TRUE){
   if(is.null(homo_mat)){
-    homo_mat <- HomoSelector(species1 = species1,species2 = species2)
+    homo_mat <- HomoSelector(RefSpec = RefSpec,QuySpec = QuySpec)
     mat <- homo_mat[,c("Gene.name","Gene.stable.ID",
                        "Gene.name.1","Gene.stable.ID.1")]
     }else if(all(c("Gene.name","Gene.stable.ID",
@@ -59,97 +61,126 @@ HVGSelector <- function(species1,
       mat <- homo_mat[,1:4] %>% set_colnames(c("Gene.name","Gene.stable.ID",
                                                "Gene.name.1","Gene.stable.ID.1"))
   }
-  species1_index <- ifelse(species1_gene == "Gene_sym","Gene.name","Gene.stable.ID")
-  species2_index <- ifelse(species2_gene == "Gene_sym","Gene.name.1","Gene.stable.ID.1")
-  mat_fil <- mat[mat[,species1_index] %in% rownames(species1_mat) &
-                   mat[,species2_index] %in% rownames(species2_mat),]
-  species1_mat_homo <- species1_mat[mat_fil[,species1_index],]
-  species2_mat_homo <- species2_mat[mat_fil[,species2_index],]
+  RefSpec_index <- ifelse(RefSpec_gene == "Gene_sym","Gene.name","Gene.stable.ID")
+  QuySpec_index <- ifelse(QuySpec_gene == "Gene_sym","Gene.name.1","Gene.stable.ID.1")
+  mat_fil <- mat[mat[,RefSpec_index] %in% rownames(RefSpec_mat) &
+                   mat[,QuySpec_index] %in% rownames(QuySpec_mat),]
+  RefSpec_mat_homo <- RefSpec_mat[mat_fil[,RefSpec_index],]
+  QuySpec_mat_homo <- QuySpec_mat[mat_fil[,QuySpec_index],]
 
   if(method == "seurat" & HVGs_method == "vst"){
     if(verbose){message(paste0("Identifying HVGs using ",HVGs_method," from ",method))}
-    species1_HVGs <- CreateSeuratObject(species1_mat_homo) %>%
+    RefSpec_HVG <- CreateSeuratObject(RefSpec_mat_homo) %>%
       suppressWarnings() %>%
       FindVariableFeatures(verbose = F) %>%
       {.[["RNA"]]@meta.features} %>%
-      dplyr::mutate(HomoGene=rownames(species2_mat_homo)) %>%
+      dplyr::mutate(HomoGene=rownames(QuySpec_mat_homo)) %>%
       {.[order(.$vst.variance.standardized,decreasing = T),]}
 
-    species2_HVGs <- CreateSeuratObject(species2_mat_homo) %>%
+    QuySpec_HVG <- CreateSeuratObject(QuySpec_mat_homo) %>%
       suppressWarnings() %>%
       FindVariableFeatures(verbose = F) %>%
       {.[["RNA"]]@meta.features} %>%
-      dplyr::mutate(HomoGene=rownames(species1_mat_homo)) %>%
+      dplyr::mutate(HomoGene=rownames(RefSpec_mat_homo)) %>%
       {.[order(.$vst.variance.standardized,decreasing = T),]}
     if(verbose){message("HVGs Screening")}
-    species1_HVGs$is.HomoHVGs <- ifelse(species1_HVGs$vst.variance.standardized>=
-                                          mean(species1_HVGs$vst.variance.standardized),
+    RefSpec_HVG$is.HomoHVGs <- ifelse(RefSpec_HVG$vst.variance.standardized>=
+                                          mean(RefSpec_HVG$vst.variance.standardized),
                                         "TRUE","FALSE")
-    species2_HVGs$is.HomoHVGs <- ifelse(species2_HVGs$vst.variance.standardized>=
-                                          mean(species2_HVGs$vst.variance.standardized),
+    QuySpec_HVG$is.HomoHVGs <- ifelse(QuySpec_HVG$vst.variance.standardized>=
+                                          mean(QuySpec_HVG$vst.variance.standardized),
                                         "TRUE","FALSE")
   }
   if(method == "seurat" & HVGs_method == "sct"){
     if(verbose){message(paste0("Identifying HVGs using ",HVGs_method," from ",method))}
-    species1_HVGs <- CreateSeuratObject(species1_mat_homo) %>%
+    RefSpec_HVG <- CreateSeuratObject(RefSpec_mat_homo) %>%
       suppressWarnings() %>%
       SCTransform(return.only.var.genes = F,verbose = F) %>%
       {.[['SCT']]@SCTModel.list$model1@feature.attributes} %>%
-      mutate(HomoGene=rownames(species2_mat_homo)) %>%
+      mutate(HomoGene=rownames(QuySpec_mat_homo)) %>%
       {.[order(.$residual_variance,decreasing = T),]}
 
-    species2_HVGs <- CreateSeuratObject(species2_mat_homo) %>%
+    QuySpec_HVG <- CreateSeuratObject(QuySpec_mat_homo) %>%
       suppressWarnings() %>%
       FindVariableFeatures(verbose = F) %>%
       {.[['SCT']]@SCTModel.list$model1@feature.attributes} %>%
-      mutate(HomoGene=rownames(species1_mat_homo)) %>%
+      mutate(HomoGene=rownames(RefSpec_mat_homo)) %>%
       {.[order(.$residual_variance,decreasing = T),]}
     if(verbose){message("Screening HVGs")}
-      species1_HVGs$is.HomoHVGs <- ifelse(species1_HVGs$residual_variance>=
-                                            mean(species1_HVGs$residual_variance),
+      RefSpec_HVG$is.HomoHVGs <- ifelse(RefSpec_HVG$residual_variance>=
+                                            mean(RefSpec_HVG$residual_variance),
                                           "TRUE","FALSE")
-      species2_HVGs$is.HomoHVGs <- ifelse(species2_HVGs$residual_variance>=
-                                            mean(species2_HVGs$residual_variance),
+      QuySpec_HVG$is.HomoHVGs <- ifelse(QuySpec_HVG$residual_variance>=
+                                            mean(QuySpec_HVG$residual_variance),
                                           "TRUE","FALSE")
       }
   if(method == "scran"){
     if(verbose){message(paste0("Identifying HVGs using ",method))}
-    species1_HVGs <- SingleCellExperiment::SingleCellExperiment(list(counts = as.matrix(species1_mat_homo))) %>%
+    RefSpec_HVG <- SingleCellExperiment::SingleCellExperiment(list(counts = as.matrix(RefSpec_mat_homo))) %>%
       scuttle::logNormCounts() %>%
       scran::modelGeneVar() %>%
       as.data.frame() %>%
-      dplyr::mutate(HomoGene=rownames(species2_mat_homo)) %>%
+      dplyr::mutate(HomoGene=rownames(QuySpec_mat_homo)) %>%
       {.[order(.$bio,decreasing = T),]}
 
-    species2_HVGs <- SingleCellExperiment::SingleCellExperiment(list(counts = as.matrix(species2_mat_homo))) %>%
+    QuySpec_HVG <- SingleCellExperiment::SingleCellExperiment(list(counts = as.matrix(QuySpec_mat_homo))) %>%
       scuttle::logNormCounts() %>%
       scran::modelGeneVar() %>%
       as.data.frame() %>%
-      dplyr::mutate(HomoGene=rownames(species1_mat_homo)) %>%
+      dplyr::mutate(HomoGene=rownames(RefSpec_mat_homo)) %>%
       {.[order(.$bio,decreasing = T),]}
 
     if(verbose){message("Screening HVGs")}
-    species1_HVGs$is.HomoHVGs <- ifelse(species1_HVGs$bio>=mean(species1_HVGs$bio),
+    RefSpec_HVG$is.HomoHVGs <- ifelse(RefSpec_HVG$bio>=mean(RefSpec_HVG$bio),
                                         "TRUE","FALSE")
-    species2_HVGs$is.HomoHVGs <- ifelse(species2_HVGs$bio>=mean(species2_HVGs$bio),
+    QuySpec_HVG$is.HomoHVGs <- ifelse(QuySpec_HVG$bio>=mean(QuySpec_HVG$bio),
                                         "TRUE","FALSE")
+  }
+  if(method == "scmap"){
+    RefSpec_HVG <- SingleCellExperiment(assays = list(counts = as.matrix(RefSpec_mat_homo)),
+                                        rowData = list(feature_symbol = rownames(RefSpec_mat_homo))) %>%
+      scuttle::logNormCounts() %>%
+      scmap::selectFeatures(suppress_plot = T) %>%
+      rowData() %>%
+      as.data.frame() %>%
+      mutate(HomoGene=rownames(QuySpec_mat_homo)) %>%
+      {.[order(.$scmap_scores,decreasing = T),]}
+
+    QuySpec_HVG <- SingleCellExperiment(assays = list(counts = as.matrix(QuySpec_mat_homo)),
+                                        rowData = list(feature_symbol = rownames(QuySpec_mat_homo))) %>%
+      scuttle::logNormCounts() %>%
+      scmap::selectFeatures(suppress_plot = T) %>%
+      rowData() %>%
+      as.data.frame() %>%
+      mutate(HomoGene=rownames(RefSpec_mat_homo)) %>%
+      {.[order(.$scmap_scores,decreasing = T),]}
+
+    if(verbose){message("Screening HVGs")}
+    RefSpec_HVG$is.HomoHVGs <- ifelse(RefSpec_HVG$scmap_scores>=
+                                        mean(RefSpec_HVG$scmap_scores,na.rm = T),
+                                      "TRUE","FALSE")
+    RefSpec_HVG$is.HomoHVGs[is.na(RefSpec_HVG$is.HomoHVGs)] <- "FALSE"
+    QuySpec_HVG$is.HomoHVGs <- ifelse(QuySpec_HVG$scmap_scores>=
+                                        mean(QuySpec_HVG$scmap_scores,na.rm = T),
+                                      "TRUE","FALSE")
+    QuySpec_HVG$is.HomoHVGs[is.na(RefSpec_HVG$is.HomoHVGs)] <- "FALSE"
   }
   if(verbose){message("Complete Successfully")}
     message("There are totally: ","\n",
-            grep("TRUE",species1_HVGs$is.HomoHVGs) %>% length()," Homo-HVGs in Species1","\n",
-            grep("TRUE",species2_HVGs$is.HomoHVGs) %>% length()," Homo-HVGs in Species2","\n",
-            intersect(species1_HVGs$HomoGene[species1_HVGs$is.HomoHVGs=="TRUE"],
-                      rownames(species2_HVGs)[species2_HVGs$is.HomoHVGs=="TRUE"]) %>% length(),
+            grep("TRUE",RefSpec_HVG$is.HomoHVGs) %>% length()," Homo-HVGs in RefSpec","\n",
+            grep("TRUE",QuySpec_HVG$is.HomoHVGs) %>% length()," Homo-HVGs in QuySpec","\n",
+            intersect(RefSpec_HVG$HomoGene[RefSpec_HVG$is.HomoHVGs=="TRUE"],
+                      rownames(QuySpec_HVG)[QuySpec_HVG$is.HomoHVGs=="TRUE"]) %>% length(),
             " Homo-HVGs overlapped")
 
-  Object <- HomoHVGObject(species1 = species1,
-                          species2 = species2,
-                          species1_mat = species1_mat,
-                          species2_mat = species2_mat,
-                          species1_mat_homo = species1_mat_homo,
-                          species2_mat_homo = species2_mat_homo,
-                          spec1_HVG = species1_HVGs,
-                          spec2_HVG = species2_HVGs,
+  Object <- HomoHVGObject(RefSpec = RefSpec,
+                          QuySpec = QuySpec,
+                          RefSpec_mat = RefSpec_mat,
+                          QuySpec_mat = QuySpec_mat,
+                          RefSpec_mat_homo = RefSpec_mat_homo,
+                          QuySpec_mat_homo = QuySpec_mat_homo,
+                          RefSpec_HVG = RefSpec_HVG,
+                          QuySpec_HVG = QuySpec_HVG,
                           Table_homo = homo_mat)
   return(Object)
 }

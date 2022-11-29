@@ -5,26 +5,26 @@
 \title{Highly variable homologous genes identifier}
 \usage{
 HVGSelector(
-  species1,
-  species2,
-  species1_mat,
-  species2_mat,
+  RefSpec,
+  QuySpec,
+  RefSpec_mat,
+  QuySpec_mat,
   homo_mat = NULL,
-  species1_gene = "Gene_sym",
-  species2_gene = "Gene_sym",
+  RefSpec_gene = "Gene_sym",
+  QuySpec_gene = "Gene_sym",
   method = "seurat",
   HVGs_method = "vst",
   verbose = TRUE
 )
 }
 \arguments{
-\item{species1, species2}{Names of species in comparative analysis. Case is ignored.}
+\item{RefSpec, QuySpec}{Names of reference(ref) and query(quy) species in comparative analysis. Case is ignored}
 
-\item{species1_mat, species2_mat}{Single cell expression matrix of species 1 or 2 with row as gene symbol/ID and column as sample ID.}
+\item{RefSpec_mat, QuySpec_mat}{Single cell expression matrix of reference or query species with row as gene symbol/ID and column as sample ID}
 
 \item{homo_mat}{Table of one to one homologous genes table between species 1 and species 2. See HomoSelector() for further details.}
 
-\item{species1_gene, species2_gene}{Type of gene name of Single cell expression matrix.
+\item{RefSpec_gene, QuySpec_gene}{Type of gene name of Single cell expression matrix.
 \itemize{
  \item{Gene_sym} \strong{:} Gene symbel (default).
  \item{Gene_id} \strong{:} Gene ID.
@@ -34,6 +34,7 @@ HVGSelector(
 \itemize{
  \item{seurat}
  \item{scran}
+ \item{scmap}
  }}
 
 \item{HVGs_method}{if method = "Seurat", available methods:

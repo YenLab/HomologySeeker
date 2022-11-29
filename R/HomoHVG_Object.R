@@ -5,11 +5,11 @@
 #' @importFrom methods setClass
 #' @importFrom magrittr %>% set_names
 #'
-#' @param species1,species2 Names of species in comparative analysis. Case is ignored
-#' @param species1_mat,species2_mat Single cell expression matrix of species 1 or 2 with row as gene symbol/ID and column as sample ID
-#' @param species1_mat_homo,species2_mat_homo Single cell expression matrix of species 1 or 2 with row as homologous gene name/ID and column as sample ID
-#' @param spec1_HVG,spec2_HVG Homo-HVG list of species 1 or 2
-#' @param Table_homo Table of one to one homologous genes list between species 1 and species 2
+#' @param RefSpec,QuySpec Names of reference(ref) and query(quy) species in comparative analysis. Case is ignored
+#' @param RefSpec_mat,QuySpec_mat Single cell expression matrix of reference or query species with row as gene symbol/ID and column as sample ID
+#' @param RefSpec_mat_homo,QuySpec_mat_homo Single cell expression matrix of reference or query species with row as homologous gene name/ID and column as sample ID
+#' @param RefSpec_HVGs,QuySpec_HVGs Homo-HVG list of reference or query species
+#' @param Table_homo Table of one to one homologous genes list between reference and query species
 #'
 #' @slot Species List of species name
 #' @slot HomoHVG List of Homo-HVGs
@@ -45,28 +45,28 @@ setMethod(f = "show",
             cat(length(object@HomoHVG[[2]]),"Homo-HVGs in",object@Species[[2]],"\n")
           })
 
-HomoHVGObject <- function(species1,
-                          species2,
-                          species1_mat,
-                          species2_mat,
-                          species1_mat_homo,
-                          species2_mat_homo,
-                          spec1_HVG,
-                          spec2_HVG,
+HomoHVGObject <- function(RefSpec,
+                          QuySpec,
+                          RefSpec_mat,
+                          QuySpec_mat,
+                          RefSpec_mat_homo,
+                          QuySpec_mat_homo,
+                          RefSpec_HVG,
+                          QuySpec_HVG,
                           Table_homo){
   object <- new(
     Class = 'HomoHVG',
-    Species = list(species1, species2) %>%
-      set_names(c("Species1","Species2")),
-    HomoHVG = list(rownames(spec1_HVG)[spec1_HVG$is.HomoHVGs=="TRUE"],
-                   rownames(spec2_HVG)[spec2_HVG$is.HomoHVGs=="TRUE"]) %>%
-      set_names(paste0(c(species1,species2),"_HomoHVGs")),
-    Matrix_orig = list(species1_mat, species2_mat) %>%
-      set_names(paste0(c(species1, species2),"_Matrix")),
-    Matrix_homo = list(species1_mat_homo, species2_mat_homo) %>%
-      set_names(paste0(c(species1, species2),"_HomoMatrix")),
-    HVG_feature = list(spec1_HVG, spec2_HVG) %>%
-      set_names(paste0(c(species1,species2),"_HVGFeatures")),
+    Species = list(RefSpec, QuySpec) %>%
+      set_names(c("RefSpec","QuySpec")),
+    HomoHVG = list(rownames(RefSpec_HVG)[RefSpec_HVG$is.HomoHVGs=="TRUE"],
+                   rownames(QuySpec_HVG)[QuySpec_HVG$is.HomoHVGs=="TRUE"]) %>%
+      set_names(paste0(c(RefSpec,QuySpec),"_HomoHVGs")),
+    Matrix_orig = list(RefSpec_mat, QuySpec_mat) %>%
+      set_names(paste0(c(RefSpec, QuySpec),"_Matrix")),
+    Matrix_homo = list(RefSpec_mat_homo, QuySpec_mat_homo) %>%
+      set_names(paste0(c(RefSpec, QuySpec),"_HomoMatrix")),
+    HVG_feature = list(RefSpec_HVG, QuySpec_HVG) %>%
+      set_names(paste0(c(RefSpec, QuySpec),"_HVGFeatures")),
     Table_homo = Table_homo)
   return(object)
 }
