@@ -32,7 +32,8 @@ setClass(Class = "HomoHVG",
                      Matrix_orig = "list",
                      Matrix_homo = "list",
                      HVG_feature = "list",
-                     Table_homo = "data.frame"))
+                     Table_homo = "data.frame",
+                     HVGs_method = "character"))
 
 setMethod(f = "show",
           signature = "HomoHVG",
@@ -53,7 +54,8 @@ HomoHVGObject <- function(RefSpec,
                           QuySpec_mat_homo,
                           RefSpec_HVG,
                           QuySpec_HVG,
-                          Table_homo){
+                          Table_homo,
+                          HVGs_method){
   object <- new(
     Class = 'HomoHVG',
     Species = list(RefSpec, QuySpec) %>%
@@ -67,6 +69,7 @@ HomoHVGObject <- function(RefSpec,
       set_names(paste0(c(RefSpec, QuySpec),"_HomoMatrix")),
     HVG_feature = list(RefSpec_HVG, QuySpec_HVG) %>%
       set_names(paste0(c(RefSpec, QuySpec),"_HVGFeatures")),
-    Table_homo = Table_homo)
+    Table_homo = Table_homo,
+    HVGs_method = HVGs_method)
   return(object)
 }

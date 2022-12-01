@@ -17,7 +17,8 @@ Imports:
     magrittr,
     biomaRt,
     dplyr,
-    scran
+    scran,
+    scmap
 RoxygenNote: 7.2.1
 Collate: 
     'AvilData.R'
@@ -27,3 +28,4 @@ Collate:
     'HVGSelector.R'
     'HomoSeeker.R'
     'data.R'
+Date: 2022

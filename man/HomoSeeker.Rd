@@ -28,17 +28,15 @@ HomoSeeker(
  \item{Gene_id} \strong{:} Gene ID.
  }}
 
-\item{method}{HVG selection method to be used. Currently Supported methods:
+\item{HVGs_method}{HVG selection method to be used. Supported methods:
 \itemize{
- \item{seurat}
+ \item{seurat_vst(default)}
+ \item{seurat_sct}
  \item{scran}
- }}
-
-\item{HVGs_method}{if method = "Seurat", available methods:
-\itemize{
- \item{vst (Default)} \strong{:} See Seurat::FindVariableFeatures().
- \item{sct} \strong{:} See Seurat::SCTransform().
- }}
+ \item{scmap}
+ \item{ROGUE}
+ }
+ See HVGSelector() for detailed description.}
 
 \item{version}{Ensembl version to be connected. See HomoSelector() and biomaRt::useEnsembl() for detailed information.}
 

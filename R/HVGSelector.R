@@ -11,7 +11,6 @@
 #' @importFrom biomaRt useEnsembl getLDS
 #' @importFrom scuttle logNormCounts
 #' @importFrom scran modelGeneVar
-#' @importFrom scmap selectFeatures
 #'
 #' @import Seurat SeuratObject
 #'
@@ -23,21 +22,32 @@
 #'  \item{Gene_sym} \strong{:} Gene symbel (default).
 #'  \item{Gene_id} \strong{:} Gene ID.
 #'  }
-#' @param method HVG selection method to be used. Currently Supported methods:
+#' @param HVGs_method HVG selection method to be used. Currently Supported methods:
 #' \itemize{
-#'  \item{seurat}
-#'  \item{scran}
-#'  \item{scmap}
-#'  }
-#' @param HVGs_method if method = "Seurat", available methods:
-#' \itemize{
-#'  \item{vst(Default)} \strong{:} See Seurat::FindVariableFeatures().
-#'  \item{scran} \strong{:} See Seurat::SCTransform().
+#'  \item{\strong{seurat_vst}} \strong{:}  Identify HVGs through variance of standardized gene expression.
+#'  Brifly, vst obtain expected variance of gene expression through relationship between logarithmic
+#'  variance and logarithmic mean value of gene expression level (local polynomial regression), and
+#'  standardize gene expression levels using expected variance. The variance of standardized value were
+#'  used for selecting HVGs. See Seurat::FindVariableFeatures for further information.
+#'  \item{\strong{seurat_sct}} \strong{:}  Identify HVGs through Pearson residuals of gene expression using
+#'  the regularized negative binomial regression. See Seurat::SCTransform() and sctransform::vst()
+#'  for further information.
+#'  \item{\strong{scran}} \strong{:}  Identify HVGs through fitting the relationship between variance of genes
+#'  logarithmic expression value and mean expression value of genes.
+#'  See scran::modelGeneVar() for further information.
+#'  \item{\strong{scmap}} \strong{:}  Identify HVGs through fitting the relationship between genes average
+#'  expression and dropout rate of single-cell matrix. See scmap::selectFeatures()
+#'  for further information.
+#'  \item{\strong{ROGUE}} \strong{:}  Identify HVGs through fitting the relationship gene expression entropy and
+#'  gene average expression levels. See ROGUE::SE_fun() for further information.
 #'  }
 #' @param verbose Whether show calculation progress. Default is TRUE.
 #'
 #' @return A HomoHVG object with Highly variable homologous gene sets for both species
 #' @export
+#' @references{
+#'
+#' }
 #'
 HVGSelector <- function(RefSpec,
                         QuySpec,
@@ -46,8 +56,7 @@ HVGSelector <- function(RefSpec,
                         homo_mat = NULL,
                         RefSpec_gene = "Gene_sym",
                         QuySpec_gene = "Gene_sym",
-                        method = "seurat",
-                        HVGs_method = "vst",
+                        HVGs_method = "seurat_vst",
                         verbose = TRUE){
   if(is.null(homo_mat)){
     homo_mat <- HomoSelector(RefSpec = RefSpec,QuySpec = QuySpec)
@@ -68,8 +77,8 @@ HVGSelector <- function(RefSpec,
   RefSpec_mat_homo <- RefSpec_mat[mat_fil[,RefSpec_index],]
   QuySpec_mat_homo <- QuySpec_mat[mat_fil[,QuySpec_index],]
 
-  if(method == "seurat" & HVGs_method == "vst"){
-    if(verbose){message(paste0("Identifying HVGs using ",HVGs_method," from ",method))}
+  if(HVGs_method == "seurat_vst"){
+    if(verbose){message("Identifying HVGs using vst from Seurat")}
     RefSpec_HVG <- CreateSeuratObject(RefSpec_mat_homo) %>%
       suppressWarnings() %>%
       FindVariableFeatures(verbose = F) %>%
@@ -91,8 +100,8 @@ HVGSelector <- function(RefSpec,
                                           mean(QuySpec_HVG$vst.variance.standardized),
                                         "TRUE","FALSE")
   }
-  if(method == "seurat" & HVGs_method == "sct"){
-    if(verbose){message(paste0("Identifying HVGs using ",HVGs_method," from ",method))}
+  if(HVGs_method == "seurat_sct"){
+    if(verbose){message("Identifying HVGs using sct from Seurat")}
     RefSpec_HVG <- CreateSeuratObject(RefSpec_mat_homo) %>%
       suppressWarnings() %>%
       SCTransform(return.only.var.genes = F,verbose = F) %>%
@@ -114,8 +123,8 @@ HVGSelector <- function(RefSpec,
                                             mean(QuySpec_HVG$residual_variance),
                                           "TRUE","FALSE")
       }
-  if(method == "scran"){
-    if(verbose){message(paste0("Identifying HVGs using ",method))}
+  if(HVGs_method == "scran"){
+    if(verbose){message(paste0("Identifying HVGs using ",HVGs_method))}
     RefSpec_HVG <- SingleCellExperiment::SingleCellExperiment(list(counts = as.matrix(RefSpec_mat_homo))) %>%
       scuttle::logNormCounts() %>%
       scran::modelGeneVar() %>%
@@ -136,7 +145,8 @@ HVGSelector <- function(RefSpec,
     QuySpec_HVG$is.HomoHVGs <- ifelse(QuySpec_HVG$bio>=mean(QuySpec_HVG$bio),
                                         "TRUE","FALSE")
   }
-  if(method == "scmap"){
+  if(HVGs_method == "scmap"){
+    if(verbose){message(paste0("Identifying HVGs using ",HVGs_method))}
     RefSpec_HVG <- SingleCellExperiment(assays = list(counts = as.matrix(RefSpec_mat_homo)),
                                         rowData = list(feature_symbol = rownames(RefSpec_mat_homo))) %>%
       scuttle::logNormCounts() %>%
@@ -165,6 +175,38 @@ HVGSelector <- function(RefSpec,
                                       "TRUE","FALSE")
     QuySpec_HVG$is.HomoHVGs[is.na(RefSpec_HVG$is.HomoHVGs)] <- "FALSE"
   }
+  if(HVGs_method == "ROGUE"){
+    if(verbose){message(paste0("Identifying HVGs using ",HVGs_method))}
+    RefSpec_HVG <- ROGUE::SE_fun(RefSpec_mat_homo) %>% #may filter some genes
+      as.data.frame() %>%
+      magrittr::set_rownames(.$Gene)
+    QuySpec_HVG <- ROGUE::SE_fun(QuySpec_mat_homo) %>%
+      as.data.frame() %>%
+      magrittr::set_rownames(.$Gene)
+
+    index <- mat_fil
+    index <- index[index[,RefSpec_index] %in% RefSpec_HVG$Gene &
+                     index[,QuySpec_index] %in% QuySpec_HVG$Gene,]
+
+    RefSpec_HVG <- RefSpec_HVG[index[,RefSpec_index],] %>%
+      dplyr::mutate(HomoGene=index[,QuySpec_index]) %>%
+      {.[order(.$entropy,decreasing = T),]}
+
+    QuySpec_HVG <- QuySpec_HVG[index[,QuySpec_index],] %>%
+      dplyr::mutate(HomoGene=index[,RefSpec_index]) %>%
+      {.[order(.$entropy,decreasing = T),]}
+
+    if(verbose){message("Screening HVGs")}
+    RefSpec_HVG$is.HomoHVGs <- ifelse(RefSpec_HVG$entropy>=
+                                        mean(RefSpec_HVG$entropy,na.rm = T),
+                                      "TRUE","FALSE")
+    RefSpec_HVG$is.HomoHVGs[is.na(RefSpec_HVG$is.HomoHVGs)] <- "FALSE"
+    QuySpec_HVG$is.HomoHVGs <- ifelse(QuySpec_HVG$entropy>=
+                                        mean(QuySpec_HVG$entropy,na.rm = T),
+                                      "TRUE","FALSE")
+    QuySpec_HVG$is.HomoHVGs[is.na(RefSpec_HVG$is.HomoHVGs)] <- "FALSE"
+  }
+
   if(verbose){message("Complete Successfully")}
     message("There are totally: ","\n",
             grep("TRUE",RefSpec_HVG$is.HomoHVGs) %>% length()," Homo-HVGs in RefSpec","\n",
@@ -181,7 +223,8 @@ HVGSelector <- function(RefSpec,
                           QuySpec_mat_homo = QuySpec_mat_homo,
                           RefSpec_HVG = RefSpec_HVG,
                           QuySpec_HVG = QuySpec_HVG,
-                          Table_homo = homo_mat)
+                          Table_homo = homo_mat,
+                          HVGs_method = HVGs_method)
   return(Object)
 }
 

@@ -12,8 +12,7 @@ HVGSelector(
   homo_mat = NULL,
   RefSpec_gene = "Gene_sym",
   QuySpec_gene = "Gene_sym",
-  method = "seurat",
-  HVGs_method = "vst",
+  HVGs_method = "seurat_vst",
   verbose = TRUE
 )
 }
@@ -30,17 +29,24 @@ HVGSelector(
  \item{Gene_id} \strong{:} Gene ID.
  }}
 
-\item{method}{HVG selection method to be used. Currently Supported methods:
+\item{HVGs_method}{HVG selection method to be used. Currently Supported methods:
 \itemize{
- \item{seurat}
- \item{scran}
- \item{scmap}
- }}
-
-\item{HVGs_method}{if method = "Seurat", available methods:
-\itemize{
- \item{vst(Default)} \strong{:} See Seurat::FindVariableFeatures().
- \item{scran} \strong{:} See Seurat::SCTransform().
+ \item{\strong{seurat_vst}} \strong{:}  Identify HVGs through variance of standardized gene expression.
+ Brifly, vst obtain expected variance of gene expression through relationship between logarithmic
+ variance and logarithmic mean value of gene expression level (local polynomial regression), and
+ standardize gene expression levels using expected variance. The variance of standardized value were
+ used for selecting HVGs. See Seurat::FindVariableFeatures for further information.
+ \item{\strong{seurat_sct}} \strong{:}  Identify HVGs through Pearson residuals of gene expression using
+ the regularized negative binomial regression. See Seurat::SCTransform() and sctransform::vst()
+ for further information.
+ \item{\strong{scran}} \strong{:}  Identify HVGs through fitting the relationship between variance of genes
+ logarithmic expression value and mean expression value of genes.
+ See scran::modelGeneVar() for further information.
+ \item{\strong{scmap}} \strong{:}  Identify HVGs through fitting the relationship between genes average
+ expression and dropout rate of single-cell matrix. See scmap::selectFeatures()
+ for further information.
+ \item{\strong{ROGUE}} \strong{:}  Identify HVGs through fitting the relationship gene expression entropy and
+ gene average expression levels. See ROGUE::SE_fun() for further information.
  }}
 
 \item{verbose}{Whether show calculation progress. Default is TRUE.}
@@ -50,4 +56,9 @@ A HomoHVG object with Highly variable homologous gene sets for both species
 }
 \description{
 Identify highly variable genes using homologous gene set with HVG Methodologies
+}
+\references{
+{
+
+}
 }

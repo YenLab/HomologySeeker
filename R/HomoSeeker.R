@@ -23,16 +23,15 @@
 #'  \item{Gene_sym} \strong{:} Gene symbel (default).
 #'  \item{Gene_id} \strong{:} Gene ID.
 #'  }
-#' @param method HVG selection method to be used. Currently Supported methods:
+#' @param HVGs_method HVG selection method to be used. Supported methods:
 #' \itemize{
-#'  \item{seurat}
+#'  \item{seurat_vst(default)}
+#'  \item{seurat_sct}
 #'  \item{scran}
+#'  \item{scmap}
+#'  \item{ROGUE}
 #'  }
-#' @param HVGs_method if method = "Seurat", available methods:
-#' \itemize{
-#'  \item{vst (Default)} \strong{:} See Seurat::FindVariableFeatures().
-#'  \item{sct} \strong{:} See Seurat::SCTransform().
-#'  }
+#'  See HVGSelector() for detailed description.
 #' @param version Ensembl version to be connected. See HomoSelector() and biomaRt::useEnsembl() for detailed information.
 #' @param verbose Whether show calculation progress. Default is TRUE.
 #'
@@ -69,7 +68,6 @@ HomoSeeker <- function(RefSpec,
                             homo_mat = homo_mat,
                             RefSpec_gene = RefSpec_gene,
                             QuySpec_gene = QuySpec_gene,
-                            method = method,
                             HVGs_method = HVGs_method,
                             verbose = verbose)
   return(object)
