@@ -13,7 +13,8 @@ HomoSelector(
 )
 }
 \arguments{
-\item{RefSpec, QuySpec}{Names of reference(ref) and query(quy) species in comparative analysis. Case is ignored}
+\item{RefSpec, QuySpec}{Names of reference(ref) and query(quy) species in comparative analysis. Case is ignored.
+See GetSpecNames() for detailed list.}
 
 \item{homotype}{Homologous gene relationship between two species:
 \itemize{

@@ -9,18 +9,28 @@ HomoSeeker(
   QuySpec,
   RefSpec_mat,
   QuySpec_mat,
+  homo_mat = NULL,
   RefSpec_gene = "Gene_sym",
   QuySpec_gene = "Gene_sym",
-  method = "seurat",
-  HVGs_method = "vst",
-  version = NULL,
+  HVGs_method = "seurat_vst",
+  Integrated_mat = FALSE,
+  Integrated_method = NULL,
   verbose = TRUE
 )
 }
 \arguments{
-\item{RefSpec, QuySpec}{Names of reference(ref) and query(quy) species in comparative analysis. Case is ignored}
+\item{RefSpec, QuySpec}{Names of reference(ref) and query(quy) species in comparative analysis. Case is ignored.
+See GetSpecNames() for detailed list.}
 
-\item{RefSpec_mat, QuySpec_mat}{Single cell expression matrix of reference or query species with row as gene symbol/ID and column as sample ID}
+\item{RefSpec_mat, QuySpec_mat}{Single cell expression matrix of reference or query species with row as gene
+symbol/ID and column as sample ID.}
+
+\item{homo_mat}{Table of one to one homologous genes table between reference and query species. Default to use homologous
+gene table collected by HomoSelector(). To use self constructed homologous gene table, please input table with:
+#' \itemize{
+ \item{1st Column} \strong{:} Gene symbel/ID of reference species.
+ \item{2nd Column} \strong{:} Corresponding Gene symbel/ID of query species.
+ }}
 
 \item{RefSpec_gene, QuySpec_gene}{Type of gene name of Single cell expression matrix.
 \itemize{
@@ -38,7 +48,10 @@ HomoSeeker(
  }
  See HVGSelector() for detailed description.}
 
-\item{version}{Ensembl version to be connected. See HomoSelector() and biomaRt::useEnsembl() for detailed information.}
+\item{Integrated_mat}{Whether input matrics are returned by integration}
+
+\item{Integrated_method}{If Integrated_mat=TRUE, please specify what integration method was used.
+currently, only seurat_LogNorm and seurat_SCT intergation are supported}
 
 \item{verbose}{Whether show calculation progress. Default is TRUE.}
 }

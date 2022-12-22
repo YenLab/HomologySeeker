@@ -13,15 +13,23 @@ HVGSelector(
   RefSpec_gene = "Gene_sym",
   QuySpec_gene = "Gene_sym",
   HVGs_method = "seurat_vst",
+  Integrated_mat = FALSE,
+  Integrated_method = NULL,
   verbose = TRUE
 )
 }
 \arguments{
-\item{RefSpec, QuySpec}{Names of reference(ref) and query(quy) species in comparative analysis. Case is ignored}
+\item{RefSpec, QuySpec}{Names of reference(ref) and query(quy) species in comparative analysis. Case is ignored.
+See GetSpecNames() for detailed list.}
 
 \item{RefSpec_mat, QuySpec_mat}{Single cell expression matrix of reference or query species with row as gene symbol/ID and column as sample ID}
 
-\item{homo_mat}{Table of one to one homologous genes table between species 1 and species 2. See HomoSelector() for further details.}
+\item{homo_mat}{Table of one to one homologous genes table between reference and query species. Default to use homologous
+gene table collected by HomoSelector(). To use self constructed homologous gene table, please input table with:
+#' \itemize{
+ \item{1st Column} \strong{:} Gene symbel/ID of reference species.
+ \item{2nd Column} \strong{:} Corresponding Gene symbel/ID of query species.
+ }}
 
 \item{RefSpec_gene, QuySpec_gene}{Type of gene name of Single cell expression matrix.
 \itemize{
@@ -33,9 +41,8 @@ HVGSelector(
 \itemize{
  \item{\strong{seurat_vst}} \strong{:}  Identify HVGs through variance of standardized gene expression.
  Brifly, vst obtain expected variance of gene expression through relationship between logarithmic
- variance and logarithmic mean value of gene expression level (local polynomial regression), and
- standardize gene expression levels using expected variance. The variance of standardized value were
- used for selecting HVGs. See Seurat::FindVariableFeatures for further information.
+ variance and logarithmic mean value of gene expression level (local polynomial regression).
+ The variance of standardized value were used for selecting HVGs. See Seurat::FindVariableFeatures for further information.
  \item{\strong{seurat_sct}} \strong{:}  Identify HVGs through Pearson residuals of gene expression using
  the regularized negative binomial regression. See Seurat::SCTransform() and sctransform::vst()
  for further information.
@@ -48,6 +55,14 @@ HVGSelector(
  \item{\strong{ROGUE}} \strong{:}  Identify HVGs through fitting the relationship gene expression entropy and
  gene average expression levels. See ROGUE::SE_fun() for further information.
  }}
+
+\item{Integrated_mat}{Whether input matrics are returned by integration}
+
+\item{Integrated_method}{If Integrated_mat=TRUE, please specify what integration method was used.
+currently, only seurat_LogNorm and seurat_SCT intergation are supported.
+If Integrated_method = seurat_LogNorm, please provides 'data' slot of integrated assay from your
+seurat object. If Integrated_method = seurat_SCT, please provides 'data' slot of integrated
+assay from your seurat object.}
 
 \item{verbose}{Whether show calculation progress. Default is TRUE.}
 }

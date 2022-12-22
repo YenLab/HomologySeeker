@@ -10,7 +10,8 @@
 #' @importFrom biomaRt useEnsembl getLDS
 #' @import Seurat SeuratObject
 #'
-#' @param RefSpec,QuySpec Names of reference(ref) and query(quy) species in comparative analysis. Case is ignored
+#' @param RefSpec,QuySpec Names of reference(ref) and query(quy) species in comparative analysis. Case is ignored.
+#' See GetSpecNames() for detailed list.
 #' @param homotype Homologous gene relationship between two species:
 #' \itemize{
 #'  \item{ortholog_one2one} \strong{:} One-to-one orthologues(Default).
@@ -59,11 +60,15 @@ HomoSelector <- function(RefSpec,
   }
   if(usedataset & all(GetSpecNames(c(RefSpec,QuySpec))[,2] %in% c("Human","Mouse","Zebrafish"))){
     AvilData <- AvilData()
-    spec_name <- GetSpecNames(c(RefSpec,QuySpec))[,2]
-    url <- AvilData$Source[AvilData$Reference==spec_name[1] & AvilData$Query==spec_name[2]]
-    used_dataset <- AvilData$Available_dataset[AvilData$Reference==spec_name[1] & AvilData$Query==spec_name[2]]
+    RefSpec_name <- GetSpecNames(RefSpec)
+    QuySpec_name <- GetSpecNames(QuySpec)
+    url <- AvilData$Source[intersect(grep(RefSpec_name$Species_Name,AvilData$Available_dataset),
+                                     grep(QuySpec_name$Species_Name,AvilData$Available_dataset))]
+    used_dataset <- AvilData$Available_dataset[intersect(grep(RefSpec_name$Species_Name,AvilData$Available_dataset),
+                                                         grep(QuySpec_name$Species_Name,AvilData$Available_dataset))]
     message("Loading existing ",used_dataset," datasets")
     homo_mat <- read.csv(url)
+
   }else{
 
     RefSpec_name <- GetSpecNames(RefSpec)
@@ -93,7 +98,9 @@ HomoSelector <- function(RefSpec,
     homo_mat <- homo_mat[homo_mat %>% select(contains('type')) == homotype,]
     homo_mat <- homo_mat[homo_mat %>% select(contains('confi'))==1,]
   }
-  message("Extraction Complete! :)")
-  message(paste0("Total Homologous Genes Number: ",nrow(homo_mat)))
+  message("Homologous Genes Extraction Complete")
+  message(paste0("Extracted ",nrow(homo_mat),
+                 " Homologous Genes between ",
+                 RefSpec_name$Species_Name," and ",QuySpec_name$Species_Name))
   return(homo_mat)
 }
