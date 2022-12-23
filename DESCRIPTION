@@ -9,16 +9,19 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Depends: 
-    R (>= 2.10)
+    R (>= 2.10),
+    Seurat,
+    SeuratObject,
+    magrittr,
+    biomaRt,
+    dplyr
 Imports:
     methods,
     Seurat,
     SeuratObject,
     magrittr,
     biomaRt,
-    dplyr,
-    scran,
-    scmap
+    dplyr
 RoxygenNote: 7.2.1
 Collate: 
     'AvilData.R'
