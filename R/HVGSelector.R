@@ -11,7 +11,7 @@
 #' @importFrom biomaRt useEnsembl getLDS
 #' @importFrom scuttle logNormCounts
 #' @importFrom scran modelGeneVar
-#'
+#' @importFrom ROGUE SE_fun
 #' @import Seurat SeuratObject
 #'
 #' @param RefSpec,QuySpec Names of reference(ref) and query(quy) species in comparative analysis. Case is ignored.
