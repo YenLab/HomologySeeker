@@ -13,6 +13,7 @@
 #' @importFrom scmap selectFeatures
 #' @importFrom scran modelGeneVar
 #' @importFrom ROGUE SE_fun
+#' @importFrom SummarizedExperiment rowData
 #' @import Seurat SeuratObject
 #'
 #' @param RefSpec,QuySpec Names of reference(ref) and query(quy) species in comparative analysis. Case is ignored.
@@ -167,7 +168,7 @@ HVGSelector <- function(RefSpec,
                                           rowData = list(feature_symbol = rownames(RefSpec_mat_homo))) %>%
         scuttle::logNormCounts() %>%
         scmap::selectFeatures(suppress_plot = T) %>%
-        rowData() %>%
+        SummarizedExperiment::rowData() %>%
         as.data.frame() %>%
         mutate(HomoGene=rownames(QuySpec_mat_homo)) %>%
         {.[order(.$scmap_scores,decreasing = T),]}
@@ -176,7 +177,7 @@ HVGSelector <- function(RefSpec,
                                           rowData = list(feature_symbol = rownames(QuySpec_mat_homo))) %>%
         scuttle::logNormCounts() %>%
         scmap::selectFeatures(suppress_plot = T) %>%
-        rowData() %>%
+        SummarizedExperiment::rowData() %>%
         as.data.frame() %>%
         mutate(HomoGene=rownames(RefSpec_mat_homo)) %>%
         {.[order(.$scmap_scores,decreasing = T),]}
