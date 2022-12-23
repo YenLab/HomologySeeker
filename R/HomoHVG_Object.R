@@ -61,8 +61,14 @@ HomoHVGObject <- function(RefSpec,
     Species = list(RefSpec, QuySpec) %>%
       set_names(c("RefSpec","QuySpec")),
     HomoHVG = list(rownames(RefSpec_HVG)[RefSpec_HVG$is.HomoHVGs=="TRUE"],
-                   rownames(QuySpec_HVG)[QuySpec_HVG$is.HomoHVGs=="TRUE"]) %>%
-      set_names(paste0(c(RefSpec,QuySpec),"_HomoHVGs")),
+                   rownames(QuySpec_HVG)[QuySpec_HVG$is.HomoHVGs=="TRUE"],
+                   intersect(rownames(RefSpec_HVG)[RefSpec_HVG$is.HomoHVGs=="TRUE"],
+                             QuySpec_HVG$HomoGene[QuySpec_HVG$is.HomoHVGs=="TRUE"]),
+                   intersect(RefSpec_HVG$HomoGene[RefSpec_HVG$is.HomoHVGs=="TRUE"],
+                             rownames(QuySpec_HVG)[QuySpec_HVG$is.HomoHVGs=="TRUE"])) %>%
+      set_names(paste0(c(RefSpec,QuySpec,
+                         paste0(RefSpec,"_Overlapped"),
+                         paste0(QuySpec,"_Overlapped")),"_HomoHVGs")),
     Matrix_orig = list(RefSpec_mat, QuySpec_mat) %>%
       set_names(paste0(c(RefSpec, QuySpec),"_Matrix")),
     Matrix_homo = list(RefSpec_mat_homo, QuySpec_mat_homo) %>%
