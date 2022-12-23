@@ -10,6 +10,7 @@
 #' @importFrom dplyr select mutate
 #' @importFrom biomaRt useEnsembl getLDS
 #' @importFrom scuttle logNormCounts
+#' @importFrom scmap selectFeatures
 #' @importFrom scran modelGeneVar
 #' @importFrom ROGUE SE_fun
 #' @import Seurat SeuratObject
