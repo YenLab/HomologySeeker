@@ -164,7 +164,7 @@ HVGSelector <- function(RefSpec,
     }
     if(HVGs_method == "scmap"){
       if(verbose){message(paste0("Identifying HVGs using ",HVGs_method))}
-      RefSpec_HVG <- SingleCellExperiment(assays = list(counts = as.matrix(RefSpec_mat_homo)),
+      RefSpec_HVG <- SingleCellExperiment::SingleCellExperiment(assays = list(counts = as.matrix(RefSpec_mat_homo)),
                                           rowData = list(feature_symbol = rownames(RefSpec_mat_homo))) %>%
         scuttle::logNormCounts() %>%
         scmap::selectFeatures(suppress_plot = T) %>%
@@ -173,7 +173,7 @@ HVGSelector <- function(RefSpec,
         mutate(HomoGene=rownames(QuySpec_mat_homo)) %>%
         {.[order(.$scmap_scores,decreasing = T),]}
 
-      QuySpec_HVG <- SingleCellExperiment(assays = list(counts = as.matrix(QuySpec_mat_homo)),
+      QuySpec_HVG <- SingleCellExperiment::SingleCellExperiment(assays = list(counts = as.matrix(QuySpec_mat_homo)),
                                           rowData = list(feature_symbol = rownames(QuySpec_mat_homo))) %>%
         scuttle::logNormCounts() %>%
         scmap::selectFeatures(suppress_plot = T) %>%
