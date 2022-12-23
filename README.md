@@ -1,4 +1,4 @@
-<h1 align="center">Seeking homologous genes with highly variable expression</h1>
+<h1 align="center">Seeker for highly variable homologous genes</h1>
 🎯 Keeping the potential homologous genes set with biological meaning is of great importance before comparative analysis between species. To this end, we sought to take advantage of the concept of highly variable genes (HVGs), of which are widely used in single-cell RNA-seq analysis and may related to genuine biological variation. Furthermore, HVGs can be identified in an unsupervised and low calculation cost manner that are applicable to various kind of development system. Here we introduce HomoSeeker that is designed to identify homologous genes set with highly variable expression (Homo-HVGs) for cross-species analysis while keeping species-specific homologous/non-homologous genes for additional purpose
 
 ![image](https://github.com/Soap4/HomoSeeker/blob/master/image/HomoSeeker.png)
@@ -30,7 +30,7 @@ load("Midbrain_singlecell_Manno.RData")
 load(url("https://github.com/Soap4/Data/raw/main/scRNA-seq/Midbrain_singlecell_Manno.RData"))
 ```
 
-## 2. One-step process
+## 2. One-step process 🚀
 
 To use ***HomoSeeker***, you can simply run:
 ```r
@@ -51,7 +51,7 @@ The ```HomoSeeker()```function returns ```midbrain```, a ```HomoHVG object``` th
 + ```HVG_feature```: HVG information  
 + ```Table_homo```: Homology information  
 
-## 3. Step-by-step process
+## 3. Step-by-step process 📜
 
 To use ***HomoSeeker*** more flexibly, you can use standard ***HomoSeeker*** pipline as well:
 
@@ -83,3 +83,9 @@ midbrain <- HVGSelector(RefSpec = "mouse",   ## Name for species 1
                         verbose = TRUE)
 ```
 ```HVGSelector()``` returns a ```HomoHVG object``` as describe above.
+
+# Maintenance
+😃 Any possible questions or improvements for ***HomoSeeker*** are welcome to post on the [issue page](https://github.com/Soap4/Data/issues)
+
+Shaokang Mo🙇  
+soap79022@outlook.com
