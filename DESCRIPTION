@@ -17,10 +17,10 @@ Imports:
     magrittr,
     biomaRt,
     dplyr,
-    scran,
-    scmap,
-    scuttle,
-    ROGUE
+    scran (>= 1.18.7),
+    scmap (>= 1.9.3),
+    scuttle (>= 1.0.4),
+    ROGUE (>= 1.0)
 RoxygenNote: 7.2.1
 Collate: 
     'AvilData.R'
