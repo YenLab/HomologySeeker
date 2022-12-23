@@ -14,7 +14,7 @@ if (!requireNamespace("devtools")) install.packages("devtools")
 devtools::install_github("Soap4/HomoSeeker")
 ```
 # Usage
-## 1. Data preperation
+## 1. Data preperation ▶️
 
 ***HomoSeeker*** requires single-cell matrics (row as genes and column as samples) from two species to seek Homo-HVGs.
 
@@ -85,7 +85,7 @@ midbrain <- HVGSelector(RefSpec = "mouse",   ## Name for species 1
 ```HVGSelector()``` returns a ```HomoHVG object``` as describe above.
 
 # Maintenance
-😃 Any possible questions or improvements for ***HomoSeeker*** are welcome to post on the [issue page](https://github.com/Soap4/Data/issues)
+🧐 Any possible questions or improvements for ***HomoSeeker*** are welcome to post on the [issue page](https://github.com/Soap4/Data/issues)
 
-Shaokang Mo🙇  
+Shaokang Mo🤡  
 soap79022@outlook.com
