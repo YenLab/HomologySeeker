@@ -7,11 +7,11 @@
 To install *HomoSeeker*, please use:
 ```r
 if (!requireNamespace("remotes")) install.packages("remotes")
-remotes::install_github("Soap4/HomoSeeker")
+remotes::install_github("Soap4/HomoSeeker", upgrade = FALSE, dependencies = TRUE)
 
 ## or
 if (!requireNamespace("devtools")) install.packages("devtools")
-devtools::install_github("Soap4/HomoSeeker")
+devtools::install_github("Soap4/HomoSeeker", upgrade = FALSE, dependencies = TRUE)
 ```
 # Usage
 ## 1. Data preperation ▶️
