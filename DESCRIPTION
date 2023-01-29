@@ -1,4 +1,4 @@
-Package: HomoSeeker
+Package: HomologySeeker
 Type: Package
 Title: Seeker for homologous genes with highly variable expression
 Version: 0.1.0
