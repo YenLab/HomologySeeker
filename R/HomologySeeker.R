@@ -3,8 +3,8 @@
 #' @description Get homologous information and variable gene sets between two species
 #'
 #' @include GetSpecNames.R
-#' @include HomoHVG_Object.R
-#' @include HomoSelector.R
+#' @include HomologyHVG_Object.R
+#' @include HomologySelector.R
 #' @include HVGSelector.R
 #'
 #' @importFrom methods setClass
@@ -45,10 +45,10 @@
 #' currently, only seurat_LogNorm and seurat_SCT intergation are supported
 #' @param verbose Whether show calculation progress. Default is TRUE.
 #'
-#' @return Returns a HomoHVG object with slot:
+#' @return Returns a HomologyHVG object with slot:
 #' \itemize{
 #'  \item{Species} \strong{:} Query species names.
-#'  \item{HomoHVG} \strong{:} Highly variable gene sets for species 1 and 2.
+#'  \item{HomologyHVG} \strong{:} Highly variable gene sets for species 1 and 2.
 #'  \item{Matrix_orig} \strong{:} Original single cell matrices for species 1 and 2.
 #'  \item{Matrix_homo} \strong{:} Single cell matrices with one-to-one homologous genes between species 1 and 2 as row.
 #'  \item{HVG_feature} \strong{:} Returned HVG information of all homologous genes for species 1 and 2.

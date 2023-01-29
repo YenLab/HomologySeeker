@@ -67,7 +67,7 @@ assay from your seurat object.}
 \item{verbose}{Whether show calculation progress. Default is TRUE.}
 }
 \value{
-A HomoHVG object with Highly variable homologous gene sets for both species
+A HomologyHVG object with Highly variable homologous gene sets for both species
 }
 \description{
 Identify highly variable genes using homologous gene set with HVG Methodologies

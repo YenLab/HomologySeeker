@@ -2,8 +2,8 @@
 #'
 #' @description Identify highly variable genes using homologous gene set with HVG Methodologies
 #'
-#' @include HomoHVG_Object.R
-#' @include HomoSelector.R
+#' @include HomologyHVG_Object.R
+#' @include HomologySelector.R
 #'
 #' @importFrom methods setClass
 #' @importFrom magrittr %>% set_names
@@ -56,7 +56,7 @@
 #' assay from your seurat object.
 #' @param verbose Whether show calculation progress. Default is TRUE.
 #'
-#' @return A HomoHVG object with Highly variable homologous gene sets for both species
+#' @return A HomologyHVG object with Highly variable homologous gene sets for both species
 #' @export
 #' @references{
 #'
@@ -110,10 +110,10 @@ HVGSelector <- function(RefSpec,
         dplyr::mutate(HomoGene=rownames(RefSpec_mat_homo)) %>%
         {.[order(.$vst.variance.standardized,decreasing = T),]}
       if(verbose){message("HVGs Screening")}
-      RefSpec_HVG$is.HomoHVGs <- ifelse(RefSpec_HVG$vst.variance.standardized>=
+      RefSpec_HVG$is.HomologyHVGs <- ifelse(RefSpec_HVG$vst.variance.standardized>=
                                           mean(RefSpec_HVG$vst.variance.standardized),
                                         "TRUE","FALSE")
-      QuySpec_HVG$is.HomoHVGs <- ifelse(QuySpec_HVG$vst.variance.standardized>=
+      QuySpec_HVG$is.HomologyHVGs <- ifelse(QuySpec_HVG$vst.variance.standardized>=
                                           mean(QuySpec_HVG$vst.variance.standardized),
                                         "TRUE","FALSE")
     }
@@ -133,10 +133,10 @@ HVGSelector <- function(RefSpec,
         mutate(HomoGene=rownames(RefSpec_mat_homo)) %>%
         {.[order(.$residual_variance,decreasing = T),]}
       if(verbose){message("Screening HVGs")}
-      RefSpec_HVG$is.HomoHVGs <- ifelse(RefSpec_HVG$residual_variance>=
+      RefSpec_HVG$is.HomologyHVGs <- ifelse(RefSpec_HVG$residual_variance>=
                                           mean(RefSpec_HVG$residual_variance),
                                         "TRUE","FALSE")
-      QuySpec_HVG$is.HomoHVGs <- ifelse(QuySpec_HVG$residual_variance>=
+      QuySpec_HVG$is.HomologyHVGs <- ifelse(QuySpec_HVG$residual_variance>=
                                           mean(QuySpec_HVG$residual_variance),
                                         "TRUE","FALSE")
     }
@@ -157,9 +157,9 @@ HVGSelector <- function(RefSpec,
         {.[order(.$bio,decreasing = T),]}
 
       if(verbose){message("Screening HVGs")}
-      RefSpec_HVG$is.HomoHVGs <- ifelse(RefSpec_HVG$bio>=mean(RefSpec_HVG$bio),
+      RefSpec_HVG$is.HomologyHVGs <- ifelse(RefSpec_HVG$bio>=mean(RefSpec_HVG$bio),
                                         "TRUE","FALSE")
-      QuySpec_HVG$is.HomoHVGs <- ifelse(QuySpec_HVG$bio>=mean(QuySpec_HVG$bio),
+      QuySpec_HVG$is.HomologyHVGs <- ifelse(QuySpec_HVG$bio>=mean(QuySpec_HVG$bio),
                                         "TRUE","FALSE")
     }
     if(HVGs_method == "scmap"){
@@ -183,14 +183,14 @@ HVGSelector <- function(RefSpec,
         {.[order(.$scmap_scores,decreasing = T),]}
 
       if(verbose){message("Screening HVGs")}
-      RefSpec_HVG$is.HomoHVGs <- ifelse(RefSpec_HVG$scmap_scores>=
+      RefSpec_HVG$is.HomologyHVGs <- ifelse(RefSpec_HVG$scmap_scores>=
                                           mean(RefSpec_HVG$scmap_scores,na.rm = T),
                                         "TRUE","FALSE")
-      RefSpec_HVG$is.HomoHVGs[is.na(RefSpec_HVG$is.HomoHVGs)] <- "FALSE"
-      QuySpec_HVG$is.HomoHVGs <- ifelse(QuySpec_HVG$scmap_scores>=
+      RefSpec_HVG$is.HomologyHVGs[is.na(RefSpec_HVG$is.HomologyHVGs)] <- "FALSE"
+      QuySpec_HVG$is.HomologyHVGs <- ifelse(QuySpec_HVG$scmap_scores>=
                                           mean(QuySpec_HVG$scmap_scores,na.rm = T),
                                         "TRUE","FALSE")
-      QuySpec_HVG$is.HomoHVGs[is.na(RefSpec_HVG$is.HomoHVGs)] <- "FALSE"
+      QuySpec_HVG$is.HomologyHVGs[is.na(RefSpec_HVG$is.HomologyHVGs)] <- "FALSE"
     }
     if(HVGs_method == "ROGUE"){
       if(verbose){message(paste0("Identifying HVGs using ",HVGs_method))}
@@ -214,14 +214,14 @@ HVGSelector <- function(RefSpec,
         {.[order(.$entropy,decreasing = T),]}
 
       if(verbose){message("Screening HVGs")}
-      RefSpec_HVG$is.HomoHVGs <- ifelse(RefSpec_HVG$entropy>=
+      RefSpec_HVG$is.HomologyHVGs <- ifelse(RefSpec_HVG$entropy>=
                                           mean(RefSpec_HVG$entropy,na.rm = T),
                                         "TRUE","FALSE")
-      RefSpec_HVG$is.HomoHVGs[is.na(RefSpec_HVG$is.HomoHVGs)] <- "FALSE"
-      QuySpec_HVG$is.HomoHVGs <- ifelse(QuySpec_HVG$entropy>=
+      RefSpec_HVG$is.HomologyHVGs[is.na(RefSpec_HVG$is.HomologyHVGs)] <- "FALSE"
+      QuySpec_HVG$is.HomologyHVGs <- ifelse(QuySpec_HVG$entropy>=
                                           mean(QuySpec_HVG$entropy,na.rm = T),
                                         "TRUE","FALSE")
-      QuySpec_HVG$is.HomoHVGs[is.na(RefSpec_HVG$is.HomoHVGs)] <- "FALSE"
+      QuySpec_HVG$is.HomologyHVGs[is.na(RefSpec_HVG$is.HomologyHVGs)] <- "FALSE"
     }
   }else{
     if(Integrated_mat & Integrated_method=="seurat_LogNorm"){
@@ -240,10 +240,10 @@ HVGSelector <- function(RefSpec,
         dplyr::mutate(HomoGene=rownames(RefSpec_mat_homo)) %>%
         {.[order(.$vst.variance.standardized,decreasing = T),]}
       if(verbose){message("HVGs Screening")}
-      RefSpec_HVG$is.HomoHVGs <- ifelse(RefSpec_HVG$vst.variance.standardized>=
+      RefSpec_HVG$is.HomologyHVGs <- ifelse(RefSpec_HVG$vst.variance.standardized>=
                                           mean(RefSpec_HVG$vst.variance.standardized),
                                         "TRUE","FALSE")
-      QuySpec_HVG$is.HomoHVGs <- ifelse(QuySpec_HVG$vst.variance.standardized>=
+      QuySpec_HVG$is.HomologyHVGs <- ifelse(QuySpec_HVG$vst.variance.standardized>=
                                           mean(QuySpec_HVG$vst.variance.standardized),
                                         "TRUE","FALSE")
     }
@@ -258,22 +258,22 @@ HVGSelector <- function(RefSpec,
       QuySpec_HVG <- QuySpec_HVG %>% .[order(.$res_var,decreasing = T),,drop = F]
 
       if(verbose){message("HVGs Screening")}
-      RefSpec_HVG$is.HomoHVGs <- ifelse(RefSpec_HVG$res_var>=mean(RefSpec_HVG$res_var),
+      RefSpec_HVG$is.HomologyHVGs <- ifelse(RefSpec_HVG$res_var>=mean(RefSpec_HVG$res_var),
                                         "TRUE","FALSE")
-      QuySpec_HVG$is.HomoHVGs <- ifelse(QuySpec_HVG$res_var>=mean(QuySpec_HVG$res_var),
+      QuySpec_HVG$is.HomologyHVGs <- ifelse(QuySpec_HVG$res_var>=mean(QuySpec_HVG$res_var),
                                         "TRUE","FALSE")
     }
   }
 
   if(verbose){message("Complete Successfully")}
     message("There are totally: ","\n",
-            grep("TRUE",RefSpec_HVG$is.HomoHVGs) %>% length()," Homo-HVGs in RefSpec","\n",
-            grep("TRUE",QuySpec_HVG$is.HomoHVGs) %>% length()," Homo-HVGs in QuySpec","\n",
-            intersect(RefSpec_HVG$HomoGene[RefSpec_HVG$is.HomoHVGs=="TRUE"],
-                      rownames(QuySpec_HVG)[QuySpec_HVG$is.HomoHVGs=="TRUE"]) %>% length(),
-            " Homo-HVGs overlapped")
+            grep("TRUE",RefSpec_HVG$is.HomologyHVGs) %>% length()," Homology-HVGs in RefSpec","\n",
+            grep("TRUE",QuySpec_HVG$is.HomologyHVGs) %>% length()," Homology-HVGs in QuySpec","\n",
+            intersect(RefSpec_HVG$HomoGene[RefSpec_HVG$is.HomologyHVGs=="TRUE"],
+                      rownames(QuySpec_HVG)[QuySpec_HVG$is.HomologyHVGs=="TRUE"]) %>% length(),
+            " Homology-HVGs overlapped")
 
-  Object <- HomoHVGObject(RefSpec = RefSpec,
+  Object <- HomologyHVGObject(RefSpec = RefSpec,
                           QuySpec = QuySpec,
                           RefSpec_mat = RefSpec_mat,
                           QuySpec_mat = QuySpec_mat,

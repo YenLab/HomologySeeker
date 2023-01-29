@@ -25,10 +25,10 @@ RoxygenNote: 7.2.1
 Collate: 
     'AvilData.R'
     'GetSpecNames.R'
-    'HomoSelector.R'
-    'HomoHVG_Object.R'
+    'HomologySelector.R'
+    'HomologyHVG_Object.R'
     'HVGSelector.R'
-    'HomoSeeker.R'
+    'HomologySeeker.R'
     'data.R'
 Date: 2022
 Remotes: MarioniLab/scran, hemberg-lab/scmap, LTLA/scuttle, PaulingLiu/ROGUE
