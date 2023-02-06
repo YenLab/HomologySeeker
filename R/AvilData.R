@@ -9,7 +9,7 @@ AvilData <- function(){
                                             "Human-Zebrafish",
                                             "Mouse-Zebrafish"),
                       Ensembl_Gene_Version = rep(108,3),
-           Source = c("https://github.com/Soap4/Data/files/10283572/Orthologues_Human_Mouse.csv",
-                   "https://github.com/Soap4/Data/files/10283573/Orthologues_Human_Zebrafish.csv",
-                   "https://github.com/Soap4/Data/files/10283574/Orthologues_Mouse_Zebrafish.csv")))
+           Source = c("https://github.com/Soap4/Data/raw/main/scRNA-seq/Orthologues_Human_Mouse.csv",
+                   "https://github.com/Soap4/Data/raw/main/scRNA-seq/Orthologues_Human_Zebrafish.csv",
+                   "https://github.com/Soap4/Data/raw/main/scRNA-seq/Orthologues_Mouse_Zebrafish.csv")))
 }

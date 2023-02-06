@@ -78,18 +78,19 @@ HVGSelector <- function(RefSpec,
   QuySpec_index <- ifelse(QuySpec_gene == "Gene_sym","Gene.name.1","Gene.stable.ID.1")
 
   if(is.null(homo_mat)){
-    homo_mat <- HomoSelector(RefSpec = RefSpec,QuySpec = QuySpec)
-    mat <- homo_mat[,c("Gene.name","Gene.stable.ID",
-                       "Gene.name.1","Gene.stable.ID.1")]
-    }else if(all(c("Gene.name","Gene.stable.ID",
-                   "Gene.name.1","Gene.stable.ID.1") %in% colnames(homo_mat))){
-      mat <- homo_mat[,c("Gene.name","Gene.stable.ID",
-                       "Gene.name.1","Gene.stable.ID.1")]
-    }else{
-      mat <- homo_mat[,1:2] %>% set_colnames(c(RefSpec_index, QuySpec_index))
+    stop("'homo_mat' is required. Please call HomoSelector() first or input homo_mat")
   }
+  if(all(c("Gene.name","Gene.stable.ID",
+           "Gene.name.1","Gene.stable.ID.1") %in% colnames(homo_mat))){
+      mat <- homo_mat[,c("Gene.name","Gene.stable.ID",
+                         "Gene.name.1","Gene.stable.ID.1")]
+   }else{
+     mat <- homo_mat[,1:2] %>% set_colnames(c(RefSpec_index, QuySpec_index))
+   }
+
   mat_fil <- mat[mat[,RefSpec_index] %in% rownames(RefSpec_mat) &
                    mat[,QuySpec_index] %in% rownames(QuySpec_mat),]
+
   RefSpec_mat_homo <- RefSpec_mat[mat_fil[,RefSpec_index],]
   QuySpec_mat_homo <- QuySpec_mat[mat_fil[,QuySpec_index],]
 
@@ -121,16 +122,16 @@ HVGSelector <- function(RefSpec,
       if(verbose){message("Identifying HVGs using sct from Seurat")}
       RefSpec_HVG <- CreateSeuratObject(RefSpec_mat_homo) %>%
         suppressWarnings() %>%
-        SCTransform(return.only.var.genes = F,verbose = F) %>%
+        SCTransform(verbose = F) %>%
         {.[['SCT']]@SCTModel.list$model1@feature.attributes} %>%
-        mutate(HomoGene=rownames(QuySpec_mat_homo)) %>%
+        mutate(HomoGene=mat_fil$Gene.name.1[mat_fil$Gene.name %in% rownames(.)]) %>%
         {.[order(.$residual_variance,decreasing = T),]}
 
       QuySpec_HVG <- CreateSeuratObject(QuySpec_mat_homo) %>%
         suppressWarnings() %>%
-        FindVariableFeatures(verbose = F) %>%
+        SCTransform(verbose = F) %>%
         {.[['SCT']]@SCTModel.list$model1@feature.attributes} %>%
-        mutate(HomoGene=rownames(RefSpec_mat_homo)) %>%
+        mutate(HomoGene=mat_fil$Gene.name[mat_fil$Gene.name.1 %in% rownames(.)]) %>%
         {.[order(.$residual_variance,decreasing = T),]}
       if(verbose){message("Screening HVGs")}
       RefSpec_HVG$is.HomologyHVGs <- ifelse(RefSpec_HVG$residual_variance>=

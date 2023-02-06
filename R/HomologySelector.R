@@ -68,6 +68,10 @@ HomoSelector <- function(RefSpec,
                                                          grep(QuySpec_name$Species_Name,AvilData$Available_dataset))]
     message("Loading existing ",used_dataset," datasets")
     homo_mat <- read.csv(url)
+    colnames(homo_mat)[match(paste0(c("Gene.name","Gene.stable.ID"),".",
+                                    rep(c(RefSpec,QuySpec),each = 2)),
+                             colnames(homo_mat))] <- c("Gene.name","Gene.stable.ID",
+                                                       "Gene.name.1","Gene.stable.ID.1")
 
   }else{
 
