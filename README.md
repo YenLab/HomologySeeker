@@ -1,5 +1,5 @@
 <h1 align="center">Seeker for highly variable homologous genes</h1>
-🎯 Keeping the potential homologous genes set with biological meaning is of great importance before comparative analysis between species. To this end, we sought to take advantage of the concept of highly variable genes (HVGs), of which are widely used in single-cell RNA-seq analysis and may related to genuine biological variation. Furthermore, HVGs can be identified in an unsupervised and low calculation cost manner that are applicable to various kind of development system. Here we introduce HomoSeeker that is designed to identify homologous genes set with highly variable expression (Homology-HVGs) for cross-species analysis while keeping species-specific homologous/non-homologous genes for additional purpose
+🎯 Keeping the potential homologous genes set with biological meaning is of great importance before comparative analysis between species. To this end, we sought to take advantage of the concept of highly variable genes (HVGs), of which are widely used in single-cell RNA-seq analysis and may related to genuine biological variation. Furthermore, HVGs can be identified in an unsupervised and low calculation cost manner that are applicable to various kind of development system. Here we introduce HomologySeeker that is designed to identify homologous genes set with highly variable expression (Homology-HVGs) for cross-species analysis while keeping species-specific homologous/non-homologous genes for additional purpose
 
 ![image](https://github.com/Soap4/HomologySeeker/blob/master/image/HomologySeeker.png)
 
@@ -53,7 +53,7 @@ The ```HomoSeeker()```function returns ```midbrain```, a ```HomoHVG object``` th
 
 ## 3. Step-by-step process 📜
 
-To use ***HomologySeeker*** more flexibly, you can use standard ***HomoSeeker*** pipline as well:
+To use ***HomologySeeker*** more flexibly, you can use standard ***HomologySeeker*** pipline as well:
 
 ### 3.1 Extract homologous gene between two species
 First of all, ***HomologySeeker*** extract homologous information between input species by using ```HomoSelector()``` function:  
@@ -66,7 +66,7 @@ homo_mat <- HomoSelector(RefSpec = "mouse",   ## Name for species 1
                          usedataset = TRUE)   ## Whether use pre-built dataset
 ```
 The ```homo_mat``` contains homologous information between species 1 and 2 and used as input for further HVG selection.  
-+ We implemented pre-built homologous table: [Mouse-Human](https://github.com/Soap4/Data/files/10283572/Orthologues_Human_Mouse.csv), [Mouse-Zebrafish](https://github.com/Soap4/Data/files/10283574/Orthologues_Mouse_Zebrafish.csv) and [Human-Zebrafish](https://github.com/Soap4/Data/files/10283573/Orthologues_Human_Zebrafish.csv) in ***HomoSeeker***. Those datasets are available through ```AvilData()``` function.
++ We implemented pre-built homologous table: [Mouse-Human](https://github.com/Soap4/Data/files/10283572/Orthologues_Human_Mouse.csv), [Mouse-Zebrafish](https://github.com/Soap4/Data/files/10283574/Orthologues_Mouse_Zebrafish.csv) and [Human-Zebrafish](https://github.com/Soap4/Data/files/10283573/Orthologues_Human_Zebrafish.csv) in ***HomologySeeker***. Those datasets are available through ```AvilData()``` function.
 
 ### 3.2 Identify HVGs
 
