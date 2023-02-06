@@ -1,22 +1,22 @@
 <h1 align="center">Seeker for highly variable homologous genes</h1>
-🎯 Keeping the potential homologous genes set with biological meaning is of great importance before comparative analysis between species. To this end, we sought to take advantage of the concept of highly variable genes (HVGs), of which are widely used in single-cell RNA-seq analysis and may related to genuine biological variation. Furthermore, HVGs can be identified in an unsupervised and low calculation cost manner that are applicable to various kind of development system. Here we introduce HomoSeeker that is designed to identify homologous genes set with highly variable expression (Homo-HVGs) for cross-species analysis while keeping species-specific homologous/non-homologous genes for additional purpose
+🎯 Keeping the potential homologous genes set with biological meaning is of great importance before comparative analysis between species. To this end, we sought to take advantage of the concept of highly variable genes (HVGs), of which are widely used in single-cell RNA-seq analysis and may related to genuine biological variation. Furthermore, HVGs can be identified in an unsupervised and low calculation cost manner that are applicable to various kind of development system. Here we introduce HomoSeeker that is designed to identify homologous genes set with highly variable expression (Homology-HVGs) for cross-species analysis while keeping species-specific homologous/non-homologous genes for additional purpose
 
-![image](https://github.com/Soap4/HomoSeeker/blob/master/image/HomoSeeker.png)
+![image](https://github.com/Soap4/HomologySeeker/blob/master/image/HomologySeeker.png)
 
 # Installation
-To install *HomoSeeker*, please use:
+To install *HomologySeeker*, please use:
 ```r
 if (!requireNamespace("remotes")) install.packages("remotes")
-remotes::install_github("Soap4/HomoSeeker", upgrade = FALSE, dependencies = TRUE)
+remotes::install_github("Soap4/HomologySeeker", upgrade = FALSE, dependencies = TRUE)
 
 ## or
 if (!requireNamespace("devtools")) install.packages("devtools")
-devtools::install_github("Soap4/HomoSeeker", upgrade = FALSE, dependencies = TRUE)
+devtools::install_github("Soap4/HomologySeeker", upgrade = FALSE, dependencies = TRUE)
 ```
 # Usage
 ## 1. Data preperation ▶️
 
-***HomoSeeker*** requires single-cell matrics (row as genes and column as samples) from two species to seek Homo-HVGs.
+***HomologySeeker*** requires single-cell matrics (row as genes and column as samples) from two species to seek Homo-HVGs.
 
 In this vignette, we provied pre-built single-cell RNA-seq dataset sampled from mouse and human midbrain by [Manno et al., *Cell*., 2016](https://doi.org/10.1016/j.cell.2016.09.027):
 
@@ -32,9 +32,9 @@ load(url("https://github.com/Soap4/Data/raw/main/scRNA-seq/Midbrain_singlecell_M
 
 ## 2. One-step process 🚀
 
-To use ***HomoSeeker***, you can simply run:
+To use ***HomologySeeker***, you can simply run:
 ```r
-library(HomoSeeker)
+library(HomologySeeker)
 
 midbrain <- HomoSeeker(RefSpec = "mouse",   ## Name for species 1
                        QuySpec = "human",   ## Name for species 2
@@ -53,13 +53,13 @@ The ```HomoSeeker()```function returns ```midbrain```, a ```HomoHVG object``` th
 
 ## 3. Step-by-step process 📜
 
-To use ***HomoSeeker*** more flexibly, you can use standard ***HomoSeeker*** pipline as well:
+To use ***HomologySeeker*** more flexibly, you can use standard ***HomoSeeker*** pipline as well:
 
 ### 3.1 Extract homologous gene between two species
-First of all, ***HomoSeeker*** extract homologous information between input species by using ```HomoSelector()``` function:  
+First of all, ***HomologySeeker*** extract homologous information between input species by using ```HomoSelector()``` function:  
 + You can check available species name by using ```GetSpecNames()``` function
 ```r
-library(HomoSeeker)
+library(HomologySeeker)
 
 homo_mat <- HomoSelector(RefSpec = "mouse",   ## Name for species 1
                          QuySpec = "human",   ## Name for species 2
@@ -70,7 +70,7 @@ The ```homo_mat``` contains homologous information between species 1 and 2 and u
 
 ### 3.2 Identify HVGs
 
-Next, ***HomoSeeker*** identify Homo-HVGs through ```HVGSelector()``` function: 
+Next, ***HomologySeeker*** identify Homo-HVGs through ```HVGSelector()``` function: 
 ```r
 midbrain <- HVGSelector(RefSpec = "mouse",   ## Name for species 1
                         QuySpec = "human",   ## Name for species 1
@@ -85,7 +85,7 @@ midbrain <- HVGSelector(RefSpec = "mouse",   ## Name for species 1
 ```HVGSelector()``` returns a ```HomoHVG object``` as describe above.
 
 # Maintenance
-🧐 Any possible questions or improvements for ***HomoSeeker*** are welcome to post on the [issue page](https://github.com/Soap4/Data/issues)
+🧐 Any possible questions or improvements for ***HomologySeeker*** are welcome to post on the [issue page](https://github.com/Soap4/Data/issues)
 
 Shaokang Mo🤡  
 soap79022@outlook.com
