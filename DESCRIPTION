@@ -16,7 +16,7 @@ Imports:
     SeuratObject,
     magrittr,
     biomaRt,
-    dplyr
+    dplyr,
     scran,
     randomForest (<= 4.6-12),
     scmap,
