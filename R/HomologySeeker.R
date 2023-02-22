@@ -11,8 +11,6 @@
 #' @importFrom magrittr %>% set_names
 #' @importFrom dplyr select mutate
 #' @importFrom biomaRt useEnsembl getLDS
-#' @importFrom scuttle logNormCounts
-#' @importFrom scran modelGeneVar
 #' @import Seurat SeuratObject
 #'
 #'
