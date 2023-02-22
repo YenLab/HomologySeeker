@@ -9,10 +9,6 @@
 #' @importFrom magrittr %>% set_names
 #' @importFrom dplyr select mutate
 #' @importFrom biomaRt useEnsembl getLDS
-#' @importFrom scuttle logNormCounts
-#' @importFrom scmap selectFeatures
-#' @importFrom scran modelGeneVar
-#' @importFrom ROGUE SE_fun
 #' @importFrom SummarizedExperiment rowData
 #' @import Seurat SeuratObject
 #'
@@ -142,87 +138,106 @@ HVGSelector <- function(RefSpec,
                                         "TRUE","FALSE")
     }
     if(HVGs_method == "scran"){
-      if(verbose){message(paste0("Identifying HVGs using ",HVGs_method))}
-      RefSpec_HVG <- SingleCellExperiment::SingleCellExperiment(list(counts = as.matrix(RefSpec_mat_homo))) %>%
-        scuttle::logNormCounts() %>%
-        scran::modelGeneVar() %>%
-        as.data.frame() %>%
-        dplyr::mutate(HomoGene=rownames(QuySpec_mat_homo)) %>%
-        {.[order(.$bio,decreasing = T),]}
+      if("scran" %in% (installed.packages() %>% rownames())){
+        if(verbose){message(paste0("Identifying HVGs using ",HVGs_method))}
+        RefSpec_HVG <- SingleCellExperiment::SingleCellExperiment(list(counts = as.matrix(RefSpec_mat_homo))) %>%
+          scuttle::logNormCounts() %>%
+          scran::modelGeneVar() %>%
+          as.data.frame() %>%
+          dplyr::mutate(HomoGene=rownames(QuySpec_mat_homo)) %>%
+          {.[order(.$bio,decreasing = T),]}
 
-      QuySpec_HVG <- SingleCellExperiment::SingleCellExperiment(list(counts = as.matrix(QuySpec_mat_homo))) %>%
-        scuttle::logNormCounts() %>%
-        scran::modelGeneVar() %>%
-        as.data.frame() %>%
-        dplyr::mutate(HomoGene=rownames(RefSpec_mat_homo)) %>%
-        {.[order(.$bio,decreasing = T),]}
+        QuySpec_HVG <- SingleCellExperiment::SingleCellExperiment(list(counts = as.matrix(QuySpec_mat_homo))) %>%
+          scuttle::logNormCounts() %>%
+          scran::modelGeneVar() %>%
+          as.data.frame() %>%
+          dplyr::mutate(HomoGene=rownames(RefSpec_mat_homo)) %>%
+          {.[order(.$bio,decreasing = T),]}
 
-      if(verbose){message("Screening HVGs")}
-      RefSpec_HVG$is.HomologyHVGs <- ifelse(RefSpec_HVG$bio>=mean(RefSpec_HVG$bio),
-                                        "TRUE","FALSE")
-      QuySpec_HVG$is.HomologyHVGs <- ifelse(QuySpec_HVG$bio>=mean(QuySpec_HVG$bio),
-                                        "TRUE","FALSE")
+        if(verbose){message("Screening HVGs")}
+        RefSpec_HVG$is.HomologyHVGs <- ifelse(RefSpec_HVG$bio>=mean(RefSpec_HVG$bio),
+                                              "TRUE","FALSE")
+        QuySpec_HVG$is.HomologyHVGs <- ifelse(QuySpec_HVG$bio>=mean(QuySpec_HVG$bio),
+                                              "TRUE","FALSE")
+      }else{
+        stop(paste("\n","Currently scran is not installed","\n",
+                   "please install scran using ",
+                   "'BiocManager::install(\"scran\")' first.",sep=""))
+      }
     }
     if(HVGs_method == "scmap"){
-      if(verbose){message(paste0("Identifying HVGs using ",HVGs_method))}
-      RefSpec_HVG <- SingleCellExperiment::SingleCellExperiment(assays = list(counts = as.matrix(RefSpec_mat_homo)),
-                                          rowData = list(feature_symbol = rownames(RefSpec_mat_homo))) %>%
-        scuttle::logNormCounts() %>%
-        scmap::selectFeatures(suppress_plot = T) %>%
-        SummarizedExperiment::rowData() %>%
-        as.data.frame() %>%
-        mutate(HomoGene=rownames(QuySpec_mat_homo)) %>%
-        {.[order(.$scmap_scores,decreasing = T),]}
+      if("scmap" %in% (installed.packages() %>% rownames())){
+        if(verbose){message(paste0("Identifying HVGs using ",HVGs_method))}
+        RefSpec_HVG <- SingleCellExperiment::SingleCellExperiment(assays = list(counts = as.matrix(RefSpec_mat_homo)),
+                                                                  rowData = list(feature_symbol = rownames(RefSpec_mat_homo))) %>%
+          scuttle::logNormCounts() %>%
+          scmap::selectFeatures(suppress_plot = T) %>%
+          SummarizedExperiment::rowData() %>%
+          as.data.frame() %>%
+          mutate(HomoGene=rownames(QuySpec_mat_homo)) %>%
+          {.[order(.$scmap_scores,decreasing = T),]}
 
-      QuySpec_HVG <- SingleCellExperiment::SingleCellExperiment(assays = list(counts = as.matrix(QuySpec_mat_homo)),
-                                          rowData = list(feature_symbol = rownames(QuySpec_mat_homo))) %>%
-        scuttle::logNormCounts() %>%
-        scmap::selectFeatures(suppress_plot = T) %>%
-        SummarizedExperiment::rowData() %>%
-        as.data.frame() %>%
-        mutate(HomoGene=rownames(RefSpec_mat_homo)) %>%
-        {.[order(.$scmap_scores,decreasing = T),]}
+        QuySpec_HVG <- SingleCellExperiment::SingleCellExperiment(assays = list(counts = as.matrix(QuySpec_mat_homo)),
+                                                                  rowData = list(feature_symbol = rownames(QuySpec_mat_homo))) %>%
+          scuttle::logNormCounts() %>%
+          scmap::selectFeatures(suppress_plot = T) %>%
+          SummarizedExperiment::rowData() %>%
+          as.data.frame() %>%
+          mutate(HomoGene=rownames(RefSpec_mat_homo)) %>%
+          {.[order(.$scmap_scores,decreasing = T),]}
 
-      if(verbose){message("Screening HVGs")}
-      RefSpec_HVG$is.HomologyHVGs <- ifelse(RefSpec_HVG$scmap_scores>=
-                                          mean(RefSpec_HVG$scmap_scores,na.rm = T),
-                                        "TRUE","FALSE")
-      RefSpec_HVG$is.HomologyHVGs[is.na(RefSpec_HVG$is.HomologyHVGs)] <- "FALSE"
-      QuySpec_HVG$is.HomologyHVGs <- ifelse(QuySpec_HVG$scmap_scores>=
-                                          mean(QuySpec_HVG$scmap_scores,na.rm = T),
-                                        "TRUE","FALSE")
-      QuySpec_HVG$is.HomologyHVGs[is.na(RefSpec_HVG$is.HomologyHVGs)] <- "FALSE"
+        if(verbose){message("Screening HVGs")}
+        RefSpec_HVG$is.HomologyHVGs <- ifelse(RefSpec_HVG$scmap_scores>=
+                                                mean(RefSpec_HVG$scmap_scores,na.rm = T),
+                                              "TRUE","FALSE")
+        RefSpec_HVG$is.HomologyHVGs[is.na(RefSpec_HVG$is.HomologyHVGs)] <- "FALSE"
+        QuySpec_HVG$is.HomologyHVGs <- ifelse(QuySpec_HVG$scmap_scores>=
+                                                mean(QuySpec_HVG$scmap_scores,na.rm = T),
+                                              "TRUE","FALSE")
+        QuySpec_HVG$is.HomologyHVGs[is.na(RefSpec_HVG$is.HomologyHVGs)] <- "FALSE"
+      }else{
+        stop(paste("\n","Currently scmap is not installed","\n",
+                   "please install scmap using ",
+                   "'BiocManager::install(\"scran\")' first.",sep=""))
+      }
+
     }
     if(HVGs_method == "ROGUE"){
-      if(verbose){message(paste0("Identifying HVGs using ",HVGs_method))}
-      RefSpec_HVG <- ROGUE::SE_fun(RefSpec_mat_homo) %>% #may filter some genes
-        as.data.frame() %>%
-        magrittr::set_rownames(.$Gene)
-      QuySpec_HVG <- ROGUE::SE_fun(QuySpec_mat_homo) %>%
-        as.data.frame() %>%
-        magrittr::set_rownames(.$Gene)
+      if("ROGUE" %in% (installed.packages() %>% rownames())){
+        if(verbose){message(paste0("Identifying HVGs using ",HVGs_method))}
+        RefSpec_HVG <- ROGUE::SE_fun(RefSpec_mat_homo) %>% #may filter some genes
+          as.data.frame() %>%
+          magrittr::set_rownames(.$Gene)
+        QuySpec_HVG <- ROGUE::SE_fun(QuySpec_mat_homo) %>%
+          as.data.frame() %>%
+          magrittr::set_rownames(.$Gene)
 
-      index <- mat_fil
-      index <- index[index[,RefSpec_index] %in% RefSpec_HVG$Gene &
-                       index[,QuySpec_index] %in% QuySpec_HVG$Gene,]
+        index <- mat_fil
+        index <- index[index[,RefSpec_index] %in% RefSpec_HVG$Gene &
+                         index[,QuySpec_index] %in% QuySpec_HVG$Gene,]
 
-      RefSpec_HVG <- RefSpec_HVG[index[,RefSpec_index],] %>%
-        dplyr::mutate(HomoGene=index[,QuySpec_index]) %>%
-        {.[order(.$entropy,decreasing = T),]}
+        RefSpec_HVG <- RefSpec_HVG[index[,RefSpec_index],] %>%
+          dplyr::mutate(HomoGene=index[,QuySpec_index]) %>%
+          {.[order(.$entropy,decreasing = T),]}
 
-      QuySpec_HVG <- QuySpec_HVG[index[,QuySpec_index],] %>%
-        dplyr::mutate(HomoGene=index[,RefSpec_index]) %>%
-        {.[order(.$entropy,decreasing = T),]}
+        QuySpec_HVG <- QuySpec_HVG[index[,QuySpec_index],] %>%
+          dplyr::mutate(HomoGene=index[,RefSpec_index]) %>%
+          {.[order(.$entropy,decreasing = T),]}
 
-      if(verbose){message("Screening HVGs")}
-      RefSpec_HVG$is.HomologyHVGs <- ifelse(RefSpec_HVG$entropy>=
-                                          mean(RefSpec_HVG$entropy,na.rm = T),
-                                        "TRUE","FALSE")
-      RefSpec_HVG$is.HomologyHVGs[is.na(RefSpec_HVG$is.HomologyHVGs)] <- "FALSE"
-      QuySpec_HVG$is.HomologyHVGs <- ifelse(QuySpec_HVG$entropy>=
-                                          mean(QuySpec_HVG$entropy,na.rm = T),
-                                        "TRUE","FALSE")
-      QuySpec_HVG$is.HomologyHVGs[is.na(RefSpec_HVG$is.HomologyHVGs)] <- "FALSE"
+        if(verbose){message("Screening HVGs")}
+        RefSpec_HVG$is.HomologyHVGs <- ifelse(RefSpec_HVG$entropy>=
+                                                mean(RefSpec_HVG$entropy,na.rm = T),
+                                              "TRUE","FALSE")
+        RefSpec_HVG$is.HomologyHVGs[is.na(RefSpec_HVG$is.HomologyHVGs)] <- "FALSE"
+        QuySpec_HVG$is.HomologyHVGs <- ifelse(QuySpec_HVG$entropy>=
+                                                mean(QuySpec_HVG$entropy,na.rm = T),
+                                              "TRUE","FALSE")
+        QuySpec_HVG$is.HomologyHVGs[is.na(RefSpec_HVG$is.HomologyHVGs)] <- "FALSE"
+      }else{
+        stop(paste0("\n","Currently ROGUE is not installed","\n",
+                   "please install ROGUE using ",
+                   "'devtools::install_github(\"PaulingLiu/ROGUE\")' first."))
+      }
     }
   }else{
     if(Integrated_mat & Integrated_method=="seurat_LogNorm"){

@@ -32,5 +32,6 @@ Suggests:
     scran,
     scmap,
     scuttle,
-    ROGUE
+    ROGUE,
+    SummarizedExperiment
 Remotes: PaulingLiu/ROGUE
