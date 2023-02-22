@@ -68,11 +68,11 @@ HomoSelector <- function(RefSpec,
                                                          grep(QuySpec_name$Species_Name,AvilData$Available_dataset))]
     message("Loading existing ",used_dataset," datasets")
     if(used_dataset=="Human-Mouse"){
-      homo_mat <- data("mouse2human")
+      homo_mat <- get("mouse2human")
     }else if(used_dataset=="Human-Zebrafish"){
-      homo_mat <- data("human2zebrafish")
+      homo_mat <- get("human2zebrafish")
     }else{
-      homo_mat <- data("mouse2zebrafish")
+      homo_mat <- get("mouse2zebrafish")
     }
     colnames(homo_mat)[match(paste0(c("Gene.name","Gene.stable.ID"),".",
                                     rep(c(RefSpec,QuySpec),each = 2)),

@@ -7,5 +7,5 @@
 AvilData()
 }
 \description{
-Query and download available datasets in HomoSeeker
+Query and download available datasets in HomologySeeker
 }
