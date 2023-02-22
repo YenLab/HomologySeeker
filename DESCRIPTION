@@ -30,7 +30,6 @@ Collate:
 Date: 2022
 Suggests:
     scran,
-    randomForest (<= 4.6-12),
     scmap,
     scuttle,
     ROGUE
