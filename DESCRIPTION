@@ -16,12 +16,7 @@ Imports:
     SeuratObject,
     magrittr,
     biomaRt,
-    dplyr,
-    scran,
-    randomForest (<= 4.6-12),
-    scmap,
-    scuttle,
-    ROGUE
+    dplyr
 RoxygenNote: 7.2.1
 biocViews:
 Collate: 
@@ -34,4 +29,9 @@ Collate:
     'data.R'
 Date: 2022
 Suggests:
+    scran,
+    randomForest (<= 4.6-12),
+    scmap,
+    scuttle,
+    ROGUE
 Remotes: PaulingLiu/ROGUE
