@@ -31,4 +31,4 @@ Collate:
     'HomologySeeker.R'
     'data.R'
 Date: 2022
-Remotes: MarioniLab/scran@HEAD, hemberg-lab/scmap@HEAD, LTLA/scuttle@HEAD, PaulingLiu/ROGUE@HEAD
+Remotes: MarioniLab/scran@HEAD, LTLA/scuttle@HEAD, PaulingLiu/ROGUE@HEAD
