@@ -62,12 +62,18 @@ HomoSelector <- function(RefSpec,
     AvilData <- AvilData()
     RefSpec_name <- GetSpecNames(RefSpec)
     QuySpec_name <- GetSpecNames(QuySpec)
-    url <- AvilData$Source[intersect(grep(RefSpec_name$Species_Name,AvilData$Available_dataset),
-                                     grep(QuySpec_name$Species_Name,AvilData$Available_dataset))]
+    # url <- AvilData$Source[intersect(grep(RefSpec_name$Species_Name,AvilData$Available_dataset),
+    #                                  grep(QuySpec_name$Species_Name,AvilData$Available_dataset))]
     used_dataset <- AvilData$Available_dataset[intersect(grep(RefSpec_name$Species_Name,AvilData$Available_dataset),
                                                          grep(QuySpec_name$Species_Name,AvilData$Available_dataset))]
     message("Loading existing ",used_dataset," datasets")
-    homo_mat <- read.csv(url)
+    if(used_dataset=="Human-Mouse"){
+      homo_mat <- data("mouse2human")
+    }else if(used_dataset=="Human-Zebrafish"){
+      homo_mat <- data("human2zebrafish")
+    }else{
+      homo_mat <- data("mouse2zebrafish")
+    }
     colnames(homo_mat)[match(paste0(c("Gene.name","Gene.stable.ID"),".",
                                     rep(c(RefSpec,QuySpec),each = 2)),
                              colnames(homo_mat))] <- c("Gene.name","Gene.stable.ID",
