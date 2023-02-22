@@ -16,7 +16,8 @@ Imports:
     SeuratObject,
     magrittr,
     biomaRt,
-    dplyr
+    dplyr,
+    SummarizedExperiment
 RoxygenNote: 7.2.1
 biocViews:
 Collate: 
@@ -32,6 +33,5 @@ Suggests:
     scran,
     scmap,
     scuttle,
-    ROGUE,
-    SummarizedExperiment
+    ROGUE
 Remotes: PaulingLiu/ROGUE
