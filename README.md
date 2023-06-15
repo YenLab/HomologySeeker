@@ -7,11 +7,11 @@
 To install *HomologySeeker*, please use:
 ```r
 if (!requireNamespace("remotes")) install.packages("remotes")
-remotes::install_github("Soap4/HomologySeeker", upgrade = FALSE, dependencies = TRUE)
+remotes::install_github("YenLab/HomologySeeker", upgrade = FALSE, dependencies = TRUE)
 
 ## or
 if (!requireNamespace("devtools")) install.packages("devtools")
-devtools::install_github("Soap4/HomologySeeker", upgrade = FALSE, dependencies = TRUE)
+devtools::install_github("YenLab/HomologySeeker", upgrade = FALSE, dependencies = TRUE)
 ```
 # Usage
 ## 1. Data preperation ▶️
