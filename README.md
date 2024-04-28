@@ -89,3 +89,6 @@ midbrain <- HVGSelector(RefSpec = "mouse",   ## Name for species 1
 
 Shaokang Mo🤡  
 soap79022@outlook.com
+
+# Citation
+Mo, S., Qu, K., Huang, J., Li, Q., Zhang, W., Yen, K. Cross-species transcriptomics reveals bifurcation point during the arterial-to-hemogenic transition. ***Commun Biol***. 6, 827 (2023). doi: 10.1038/s42003-023-05190-6
